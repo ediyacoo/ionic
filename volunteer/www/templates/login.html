@@ -1,0 +1,19 @@
+<ion-modal-view title="Voluntter Login" ng-controller="LoginController">
+
+  <ion-header-bar>
+    <h1 class="title">Login</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closeLogin()">Close</button>
+    </div>
+  </ion-header-bar>
+
+  <ion-content>
+      <div class="padding">
+          <button ng-click="login()" class="button button-block button-balanced">Oauth Sign In</button>
+          <p>
+              Clicking the above button will initiate an official browser sign in flow with Facebook.  You
+              will be redirected to the Facebook website to enter your credentials.
+          </p>
+      </div>
+  </ion-content>
+</ion-modal-view>
