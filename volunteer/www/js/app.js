@@ -56,7 +56,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     views: {
       'menuContent': {
         templateUrl: 'templates/callback.html',
-        controller: 'CallbackController'
+        controller: 'CallbackCtrl'
       }
     }
   })
@@ -65,19 +65,31 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       url: '/tweet',
       views: {
         'menuContent': {
-          templateUrl: 'templates/tweet.html'
+          templateUrl: 'templates/tweetlist.html',
+          controller: 'TweetListCtrl'
         }
       }
     })
-    .state('app.home', {
-      url: '/home',
+
+  .state('app.settings', {
+      url: '/settings',
       views: {
         'menuContent': {
-          templateUrl: 'templates/home.html',
-          controller: 'HomeCtrl'
+          templateUrl: 'templates/socialMediaSetting.html',
+          controller: 'SettingCtrl'
         }
       }
     })
+
+  .state('app.home', {
+    url: '/home',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/home.html',
+        controller: 'HomeCtrl'
+      }
+    }
+  })
 
   .state('app.single', {
     url: '/playlists/:playlistId',
@@ -88,6 +100,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   });
+
+  
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/home');
 });

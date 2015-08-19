@@ -1,6 +1,6 @@
 var app={
     consumerKey:"KPm1qydJ3r410snXWT33SOOL4",
-    consumerSecretKey:"zoV54ZlSi48MejCNG7uaKUXAWpXeHCjlCbJ5RV80YowA16OQyE",
+    consumerSecret:"zoV54ZlSi48MejCNG7uaKUXAWpXeHCjlCbJ5RV80YowA16OQyE",
     googleClientID:"641378541028-har1addb5dmfa0o2hkgnfoj0d0f63aae.apps.googleusercontent.com",
     isMobile: mobileAndTabletcheck()
 }
@@ -12,76 +12,274 @@ function mobileAndTabletcheck() {
 }
 
 
-
-angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage'])
+//starter.controller module
+angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResource', 'ngTwitter'])
 
 //create shared service functions
-.factory('mySharedService', function($rootScope) {
+.factory('mySharedService', function() {
   return {
+    //oauth login
+    oauth_login: function(type, callback){
+        //type
+        type=type || "twitter"
 
+        var callback_path='//localhost'+location.pathname+'%23/app/callback',
+            width=600,
+            height=300,
+            left=(screen.width/2)-(width/2),
+            top=(screen.height/2)-(height/2),
+            oauth_window = window.open('http://vision.sdsu.edu/hdma/auth/'+type+'?returnTo='+callback_path, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,width='+width+',height='+height+',left='+left+',top='+top);
 
+        if(app.interval){clearInterval(app.interval)}
+        app.interval=setInterval(function(){
+            if(oauth_window.closed){
+              clearInterval(app.interval);
+
+              if(callback){callback()}
+            }
+        }, 500)
+    }
   };
 })
 
-//login controller
-.controller("LoginController", function($scope, $cordovaOauth, $localStorage, $location, $http){
-  $scope.login=function(){
+//twitter service
+.factory("TwitterService", function($cordovaOauth, $cordovaOauthUtility, $localStorage, $http, $resource, $q, $twitterApi){
+  var oauth=$localStorage.oauth;
 
-      var callback_path='//localhost'+location.pathname+'%23/app/callback';
-      var oauth_window = window.open('http://vision.sdsu.edu/hdma/auth/twitter?returnTo='+callback_path, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes');
-
-      if(app.interval){clearInterval(app.interval)}
-      app.interval=setInterval(function(){
-          if(oauth_window.closed){
-            console.log($localStorage.userID)
-            clearInterval(app.interval);
-          }
-      }, 500)
-
+  function storeUserToken(data) {
+    $localStorage.oauth=data
   }
+
+  function getStoredToken() {
+    return $localStorage.oauth
+  }
+
+
+  function createTwitterSignature(method, url, msg){
+
+    var twitterOauth=oauth.twitter;
+
+    if(oauth && twitterOauth && twitterOauth.token && twitterOauth.tokenSecret){
+      var oauthObj={
+            oauth_consumer_key: app.consumerKey,
+            oauth_nonce: $cordovaOauthUtility.createNonce(32),
+            oauth_signature_method: "HMAC-SHA1",
+            oauth_token:twitterOauth.token,
+            oauth_timestamp: Math.round((new Date()).getTime() / 1000.0),
+            oauth_version: "1.0",
+            status:msg
+          },
+          signatureObj=$cordovaOauthUtility.createSignature(method, url, oauthObj, {}, app.consumerSecret, twitterOauth.tokenSecret);
+
+      $http.defaults.headers.common.Authorization=signatureObj.authorization_header;
+    }
+  }
+
+
+  return {
+    initialize: function() {
+      var deferred = $q.defer();
+      var token = getStoredToken();
+
+      if (token !== null) {
+          deferred.resolve(true);
+      } else {
+          $cordovaOauth.twitter(clientId, clientSecret).then(function(result) {
+              storeUserToken(result);
+              deferred.resolve(true);
+          }, function(error) {
+              deferred.reject(false);
+          });
+      }
+      return deferred.promise;
+    },
+
+    isAuthenticated: function(){
+      return oauth.token !== null;
+    },
+
+    retweet: function(){
+      var url="https://api.twitter.com/1.1/statuses/update.json",
+          msg="test",
+          twitterOauth=oauth.twitter;
+
+
+      /**
+      //ngTwitter
+      $twitterApi.configure(app.clientId, app.clientSecret, {oauth_token:twitterOauth.token, oauth_token_secret:twitterOauth.tokenSecret})
+      console.log($http.defaults.headers.common.Authorization)
+      $twitterApi.postStatusUpdate(msg).then(function(data){
+        console.log(data)
+      })
+      */
+
+
+
+      //$resource
+      createTwitterSignature("POST", url, msg);
+      console.log($http.defaults.headers.common.Authorization)
+      return $resource(url, {'status':msg}).save();
+
+    }
+
+  } //end return
 
 })
 
-//callback controller
-.controller("CallbackController", function($scope, $localStorage, $location, $http){
-  if(location.search){
-    var params=location.search.split("?")[1].split("&"),
-        obj={};
 
-    params.forEach(function(p){
-      var ps=p.split("=");
-      obj[ps[0]]=ps[1];
+//login controller
+.controller("LoginController", function($scope, $cordovaOauth){
+  $scope.login=function(){
+    console.log("login!!")
+    mySharedService.oauth_login("twitter", function(){
+      //console.log("login callback")
+    })
+  }
+})
+
+
+
+//login controller
+.controller("TweetListCtrl", function($scope, $localStorage, $http, $location, $ionicModal, $ionicLoading, mySharedService, TwitterService){
+  $scope.moment=moment;
+
+  //show loading icon
+  $ionicLoading.show();
+
+  $http.jsonp("http://vision.sdsu.edu/hdma/volunteer/tweets?callback=JSON_CALLBACK")
+    .success(function(json){
+      console.log(json)
+      $scope.tweetList=json;
+
+      //hide loading icon
+      $ionicLoading.hide();
     })
 
-    $localStorage.userID=obj.user_id;
+  // Create the share modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/share.html', {scope: $scope}).then(function(modal) {
+    $scope.modal_share = modal;
+  });
+
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/login.html', {scope: $scope}).then(function(modal) {
+    $scope.modal_login = modal;
+  });
+
+
+  //click each tweet to open modal for share or login
+  $scope.click=function(t){
+    console.log(t)
+    $scope.t=t
+
+    //check if a user is logged in
+    var oauth=$localStorage.oauth;
+    console.log(oauth)
+    if(oauth&&oauth.twitter){
+      $scope.modal=$scope.modal_share;
+    }else{
+      $scope.modal=$scope.modal_login;
+    }
+    $scope.modal.show();
   }
 
 
-  window.close();
+  //close modal
+  $scope.closeModal=function(){
+    $scope.modal.hide();
+  }
+
+
+  //login
+  $scope.login=function(){
+    mySharedService.oauth_login("twitter", function(){
+      console.log("login callback----------------------------")
+      console.log($localStorage)
+      if($localStorage.oauth&&$localStorage.oauth.twitter){
+        $scope.modal.hide();
+        $scope.modal=$scope.modal_share;
+        $scope.modal.show();
+      }
+    });
+  }
+
+
+  //retweet
+  $scope.retweet=function(){
+    console.log("start retweet.........................")
+    console.log($scope.t)
+
+    var t=$scope.t,
+        oauth=$localStorage.oauth.twitter;
+
+    if(t&&oauth&&oauth.user_id){
+      //retweet
+      TwitterService.retweet();
+
+
+      /**
+      $http.jsonp("http://vision.sdsu.edu/hdma/volunteer/retweet?user_id="+oauth.user_id+"&tweet_id="+t.id_str+"&callback=JSON_CALLBACK")
+        .success(function(json){
+          console.log(json)
+        })
+      */
+
+    }
+  }
+
 
 })
 
 
-.controller('HomeCtrl', function($scope, $localStorage){
-  var userid=$localStorage.userID;
-
-  if(userid&&userid!=""){
-    location.href="#/app/tweet"
+//setting controller
+.controller("SettingCtrl", function($scope, $localStorage, $http, mySharedService){
+  $scope.socialmedia={
+    twitter:false,
+    facebook:false,
+    instagram:false
   }
 
 
+  $scope.toggleChange=function(type){
+    var value=$scope.socialmedia[type],
+        oauth=$localStorage.oauth;
 
+    //if user checked
+    if(value){
+      //if we don't have oauth id
+      if(!oauth[type]){
+        mySharedService.oauth_login(type)
+      }
+    }
+  }
+
+
+})
+
+
+//callback controller
+.controller("CallbackCtrl", function($scope, $localStorage, $location, $http){
+  var params=$location.search();
+
+  if(params){
+    $localStorage.oauth=$localStorage.oauth || {};
+    if(params["type"]&&params["type"]!=""){
+      $localStorage.oauth[params["type"]]=params;
+    }
+  }
+
+  //If we immediately close the window, it may not be ready to finish saving the oauth info in the localStorage
+  //it seems need to wait a little bit.....
+  setTimeout(function(){
+    window.close();
+  },300)
+})
+
+
+.controller('HomeCtrl', function($scope, $localStorage, mySharedService){
   $scope.login=function(){
-    var callback_path='//localhost'+location.pathname+'%23/app/callback';
-    var oauth_window = window.open('http://vision.sdsu.edu/hdma/auth/twitter?returnTo='+callback_path, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes');
-
-    if(app.interval){clearInterval(app.interval)}
-    app.interval=setInterval(function(){
-        if(oauth_window.closed){
-          console.log($localStorage.userID)
-          clearInterval(app.interval);
-        }
-    }, 500)
+    mySharedService.oauth_login("twitter", function(){
+      console.log("login callback")
+    })
   }
 })
 
@@ -99,7 +297,7 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage'])
 
   // Form data for the login modal
   $scope.loginData = {};
-
+/**
   // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
@@ -127,18 +325,5 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage'])
       $scope.closeLogin();
     }, 1000);
   };
+  */
 })
-
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
-})
-
-.controller('PlaylistCtrl', function($scope, $stateParams) {
-});
