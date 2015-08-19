@@ -16,19 +16,20 @@ function mobileAndTabletcheck() {
 angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResource', 'ngTwitter'])
 
 //create shared service functions
-.factory('mySharedService', function() {
+.factory('mySharedService', function($location) {
   return {
     //oauth login
     oauth_login: function(type, callback){
         //type
         type=type || "twitter"
 
-        var callback_path='//localhost'+location.pathname+'%23/app/callback',
+        var callback_path='//'+$location.$$host+location.pathname+'%23/app/callback',
             width=600,
             height=300,
             left=(screen.width/2)-(width/2),
             top=(screen.height/2)-(height/2),
             oauth_window = window.open('http://vision.sdsu.edu/hdma/auth/'+type+'?returnTo='+callback_path, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,width='+width+',height='+height+',left='+left+',top='+top);
+
 
         if(app.interval){clearInterval(app.interval)}
         app.interval=setInterval(function(){
