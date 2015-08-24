@@ -62,7 +62,7 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
 
     if(oauth && twitterOauth && twitterOauth.token && twitterOauth.tokenSecret){
       var oauthObj={
-            oauth_consumer_key: app.consumerKey,
+            oauth_consumer_key: "2917868352-3Dx2rhI4QRxyFWoHqROSvYSFBjKzLW15ko19RwS", //app.consumerKey,
             oauth_nonce: $cordovaOauthUtility.createNonce(32),
             oauth_signature_method: "HMAC-SHA1",
             oauth_token:twitterOauth.token,
@@ -70,7 +70,7 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
             oauth_version: "1.0",
             status:msg
           },
-          signatureObj=$cordovaOauthUtility.createSignature(method, url, oauthObj, {}, app.consumerSecret, twitterOauth.tokenSecret);
+          signatureObj=$cordovaOauthUtility.createSignature(method, url, oauthObj, {}, app.consumerSecret, "RRCeVgRwMtnlg6d6Q4pekYJNmfUDw3Dee1zHFk2EKxzdn"); //twitterOauth.tokenSecret);
 
       $http.defaults.headers.common.Authorization=signatureObj.authorization_header;
     }
@@ -100,6 +100,8 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
     },
 
     retweet: function(){
+
+
       var url="https://api.twitter.com/1.1/statuses/update.json",
           msg="test",
           twitterOauth=oauth.twitter;
@@ -113,12 +115,8 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
         console.log(data)
       })
       */
-
-
-
       //$resource
       createTwitterSignature("POST", url, msg);
-      console.log($http.defaults.headers.common.Authorization)
       return $resource(url, {'status':msg}).save();
 
     }
@@ -127,6 +125,10 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
 
 })
 
+
+//*************************************************
+//controller
+//*************************************************
 
 //login controller
 .controller("LoginController", function($scope, $cordovaOauth){
@@ -139,9 +141,8 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
 })
 
 
-
-//login controller
-.controller("TweetListCtrl", function($scope, $localStorage, $http, $location, $ionicModal, $ionicLoading, mySharedService, TwitterService){
+//tweet list controller
+.controller("TweetListCtrl", function($scope, $localStorage, $http,  $ionicModal, $ionicLoading, $ionicPopup, mySharedService, TwitterService){
   $scope.moment=moment;
 
   //show loading icon
@@ -206,23 +207,50 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
 
   //retweet
   $scope.retweet=function(){
-    console.log("start retweet.........................")
-    console.log($scope.t)
-
     var t=$scope.t,
         oauth=$localStorage.oauth.twitter;
 
     if(t&&oauth&&oauth.user_id){
       //retweet
-      TwitterService.retweet();
+      //client side seems not working. There will be CORS (cross-domain issues)
+      //TwitterService.retweet();
+
+      //post back to server and let server to retweet
+      $http.post("http://vision.sdsu.edu/hdma/volunteer/retweet", {user_id: oauth.user_id, screen_name:oauth.screen_name, tweet_id: t.id_str, token: oauth.token, tokenSecret: oauth.tokenSecret}).then(function(result){
+        if(result.status==200 && result.statusText=="OK"){
+          console.log(result)
+          var data=result.data,
+              t=data.data;
+
+          if(t){
+            //if there is an error while retweeting
+            if(t.errors&&t.errors.length>0){
+              $ionicPopup.alert({
+                title:"Error",
+                template:t.errors[0].message
+              })
+              return;
+            }
+
+            $ionicPopup.alert({
+              title:"Succeed",
+              template:"Retweet Succeed! Please go to Twitter to see the retweet!"
+            })
+          }else{
+            $ionicPopup.alert({
+              title:"Error",
+              template:data.error
+            })
+          }
 
 
-      /**
-      $http.jsonp("http://vision.sdsu.edu/hdma/volunteer/retweet?user_id="+oauth.user_id+"&tweet_id="+t.id_str+"&callback=JSON_CALLBACK")
-        .success(function(json){
-          console.log(json)
-        })
-      */
+        }
+      }, function(err){
+        console.log('ERROR while posting reweet..................')
+        console.log(err)
+
+      });
+
 
     }
   }
@@ -257,6 +285,7 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
 })
 
 
+
 //callback controller
 .controller("CallbackCtrl", function($scope, $localStorage, $location, $http){
   var params=$location.search();
@@ -276,6 +305,7 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
 })
 
 
+//home controller
 .controller('HomeCtrl', function($scope, $localStorage, mySharedService){
   $scope.login=function(){
     mySharedService.oauth_login("twitter", function(){
@@ -286,7 +316,8 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
 
 
 
-
+//app controller
+//may need to delete!!!!!!!!!!!!!
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
   // With the new view caching in Ionic, Controllers are only called
