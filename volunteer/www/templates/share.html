@@ -7,7 +7,7 @@
     </div>
   </ion-header-bar>
 
-  <ion-content>
+  <ion-content class='share'>
     <div class="list card"  ng-if='t.user.screen_name=="ReadySanDiego"'>
       <div class='tweet-avatar'>
         <img src="{{t.user.profile_image_url_https}}">
@@ -24,7 +24,9 @@
       </div>
     </div>
 
-    <button ng-click="retweet(t)" class='btn btn-primary'>Retweet</button>
+    <div class="padding" style='margin-top:25px; '>
+        <button class="button icon-left ion-android-share-alt button-calm" ng-click="retweet(t)">Share</button>
+    </div>
 
   </ion-content>
 </ion-modal-view>

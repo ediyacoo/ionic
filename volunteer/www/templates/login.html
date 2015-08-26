@@ -7,13 +7,16 @@
     </div>
   </ion-header-bar>
 
-  <ion-content>
-      <div class="padding">
-          <button ng-click="login()" class="button button-block button-balanced">Oauth Sign In</button>
-          <p>
-              Clicking the above button will initiate an official browser sign in flow with Facebook.  You
-              will be redirected to the Facebook website to enter your credentials.
-          </p>
+  <ion-content class='login'>
+      <div class="padding" style='margin-top:25px; '>
+          <h3>Already OES volunteer?</h3>
+          <p>please directly login with your Twitter account.</p>
+          <button class="button icon-left ion-social-twitter button-calm" ng-click="login()">Login with Twitter Account</button>
+      </div>
+
+      <div class="padding" style='margin-top:80px; '>
+          <h3>Not yet?</h3>
+          <p>No worry. Please click <a href='http://vision.sdsu.edu/ibss/signup.html' target='_blank'>here</a> to be a OES volunteer.</p>
       </div>
   </ion-content>
 </ion-modal-view>

@@ -81,15 +81,6 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     })
 
-  .state('app.share', {
-      url: '/share',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/share.html'
-        }
-      }
-    })
-
   .state('app.home', {
     url: '/home',
     views: {
@@ -110,7 +101,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   });
 
-
+  
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/home');
 });

@@ -14,4 +14,17 @@
 .tweet-toolbox {padding:0px; margin:0px; list-style:none; width:100%; display:inline-block;  }
 .tweet-toolbox li {float:left; width:30%; padding:0% 1.5% 0% 1.5%; ; display:block ; text-align:center; }
 
-.tweet-media img {border-radius:10px; }
+.tweet-media img {border-radius:10px; width:95%; max-width:600px;  }
+
+
+.home .row .col {text-align:center; }
+.home .row {margin:100px 0px 100px 0px; }
+.home .title {margin-bottom:25px; margin-top:150px;   }
+.home .description {margin-top:25px; margin-bottom:150px;  }
+.home img.logo {width:100px; height:100px; }
+
+
+.login * {text-align:center; }
+
+
+.share .padding {text-align:center; }

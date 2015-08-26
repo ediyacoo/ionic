@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!-- saved from url=(0055)http://localhost/github/ionic/volunteer/www/#/app/login -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta http-equiv="Content-Security-Policy" content="default-src &#39;self&#39; data: gap: https://ssl.gstatic.com &#39;unsafe-inline&#39; &#39;unsafe-eval&#39;; style-src &#39;self&#39; &#39;unsafe-inline&#39;; media-src *; connect-src https: http:; script-src http: ;img-src http: https:">
+    <title>OES Tweet</title>
+
+    <link href="http://localhost/github/ionic/volunteer/www/lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="http://localhost/github/ionic/volunteer/www/css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="./OES Tweet_files/ionic.bundle.js"></script><style type="text/css"></style>
+    <script src="./OES Tweet_files/angular-resource.min.js"></script>
+    <script src="./OES Tweet_files/ng-twitter-api.min.js"></script>
+    
+    <script src="./OES Tweet_files/sha.js"></script>
+    <script src="./OES Tweet_files/ng-cordova-oauth.js"></script>
+    <script src="./OES Tweet_files/ngStorage.min.js"></script>
+
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="./OES Tweet_files/cordova.js"></script>
+
+    <script src="./OES Tweet_files/moment.min.js"></script>
+
+    <!-- your app's js -->
+    <script src="./OES Tweet_files/app.js"></script>
+    <script src="./OES Tweet_files/controllers.js"></script>
+  </head>
+
+  <body ng-app="starter" class="grade-a platform-browser platform-ios platform-ios8 platform-ios8_0 platform-ready">
+    <ion-nav-view class="view-container" nav-view-transition="ios" nav-view-direction="none" nav-swipe=""><ion-side-menus enable-menu-with-back-views="false" class="pane view" nav-view="active" style="opacity: 1; transform: translate3d(0%, 0px, 0px);">
+  <ion-side-menu-content class="menu-content pane">
+    <ion-nav-bar class="bar-stable nav-bar-container" nav-bar-transition="ios" nav-bar-direction="forward" nav-swipe="">
+      <ion-nav-back-button class="hide"></ion-nav-back-button>
+
+      <ion-nav-buttons side="left" class="hide"></ion-nav-buttons>
+    <div class="nav-bar-block" nav-bar="cached"><ion-header-bar class="bar-stable bar bar-header disable-user-behavior" align-title="center"><button ng-click="$ionicGoBack()" class="button back-button hide buttons  button-clear header-item"><i class="icon ion-ios-arrow-back"></i> 
+      <span class="back-text"><span class="default-title">Back</span><span class="previous-title hide"></span></span></button><div class="buttons buttons-left header-item"><span class="left-buttons">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+        </button>
+      </span></div><div class="title title-center header-item"></div></ion-header-bar></div><div class="nav-bar-block" nav-bar="active"><ion-header-bar class="bar-stable bar bar-header disable-user-behavior" align-title="center"><button ng-click="$ionicGoBack()" class="button back-button buttons  button-clear header-item"><i class="icon ion-ios-arrow-back"></i> 
+      <span class="back-text"><span class="default-title">Back</span><span class="previous-title hide">undefined</span></span></button><div class="buttons buttons-left header-item"><span class="left-buttons">
+        <button class="button button-icon button-clear ion-navicon hide" menu-toggle="left">
+        </button>
+      </span></div><div class="title title-center header-item" style="left: 67px; right: 67px;">OES Tweet</div></ion-header-bar></div></ion-nav-bar>
+    <ion-nav-view name="menuContent" class="view-container" nav-view-transition="ios" nav-view-direction="back" nav-swipe=""><ion-modal-view title="Voluntter Login" class="pane modal" nav-view="active" style="opacity: 1; transform: translate3d(0%, 0px, 0px);">
+
+  <ion-header-bar class="bar bar-header disable-user-behavior">
+    <h1 class="title" style="left: 55px; right: 55px;">Login</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closeModal()">Close</button>
+    </div>
+  </ion-header-bar>
+
+  <ion-content class="login scroll-content ionic-scroll  has-header"><div class="scroll" style="transform: translate3d(0px, 0px, 0px) scale(1);">
+      <div class="padding" style="margin-top:25px; ">
+          <h3>Already OES volunteer?</h3>
+          <p>please directly login with your Twitter account.</p>
+          <button class="button icon-left ion-social-twitter button-calm" ng-click="login()">Login with Twitter Account</button>
+      </div>
+
+      <div class="padding" style="margin-top:80px; ">
+          <h3>Not yet?</h3>
+          <p>No worry. Please click <a href="http://vision.sdsu.edu/ibss/signup.html" target="_blank">here</a> to be a OES volunteer.</p>
+      </div>
+  </div><div class="scroll-bar scroll-bar-v"><div class="scroll-bar-indicator scroll-bar-fade-out" style="transform: translate3d(0px, 0px, 0px) scaleY(1); height: 0px;"></div></div></ion-content>
+</ion-modal-view></ion-nav-view>
+  </ion-side-menu-content>
+
+  <ion-side-menu side="left" is-enabled="true" width="275" class="menu menu-left" style="width: 275px;">
+    <ion-header-bar class="bar-stable bar bar-header disable-user-behavior">
+      <h1 class="title">Menu</h1>
+    </ion-header-bar>
+    <ion-content class="scroll-content ionic-scroll  has-header"><div class="scroll" style="transform: translate3d(0px, 0px, 0px) scale(1);">
+      <ion-list class="disable-user-behavior"><div class="list">
+        <ion-item menu-close="" ng-click="login()" class="item">
+          Login
+        </ion-item>
+        <ion-item menu-close="" href="#/app/home" class="item item-complex"><a class="item-content" ng-href="#/app/home" href="http://localhost/github/ionic/volunteer/www/#/app/home">
+          Home
+        </a></ion-item>
+        <ion-item menu-close="" href="#/app/settings" class="item item-complex"><a class="item-content" ng-href="#/app/settings" href="http://localhost/github/ionic/volunteer/www/#/app/settings">
+          Settings
+        </a></ion-item>
+        <ion-item menu-close="" href="#/app/tweet" class="item item-complex"><a class="item-content" ng-href="#/app/tweet" href="http://localhost/github/ionic/volunteer/www/#/app/tweet">
+          OES Tweets
+        </a></ion-item>
+        <!--<ion-item menu-close href="#/app/playlists">
+          Playlists
+        </ion-item>-->
+      </div></ion-list>
+    </div><div class="scroll-bar scroll-bar-v"><div class="scroll-bar-indicator scroll-bar-fade-out" style="transform: translate3d(0px, 0px, 0px) scaleY(1); height: 0px;"></div></div></ion-content>
+  </ion-side-menu>
+</ion-side-menus></ion-nav-view>
+  
+
+<div id="window-resizer-tooltip" style="display: none;"><a href="http://localhost/github/ionic/volunteer/www/#" title="Edit settings"></a><span class="tooltipTitle">Window size: </span><span class="tooltipWidth" id="winWidth">1920</span> x <span class="tooltipHeight" id="winHeight">1080</span><br><span class="tooltipTitle">Viewport size: </span><span class="tooltipWidth" id="vpWidth">375</span> x <span class="tooltipHeight" id="vpHeight">667</span></div><div class="backdrop"></div><div class="click-block click-block-hide"></div><div class="loading-container"><div class="loading"><ion-spinner class="spinner spinner-ios"><svg viewBox="0 0 64 64"><g stroke-width="4" stroke-linecap="round"><line y1="17" y2="29" transform="translate(32,32) rotate(180)"><animate attributeName="stroke-opacity" dur="750ms" values="1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0;1" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(210)"><animate attributeName="stroke-opacity" dur="750ms" values="0;1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(240)"><animate attributeName="stroke-opacity" dur="750ms" values=".1;0;1;.85;.7;.65;.55;.45;.35;.25;.15;.1" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(270)"><animate attributeName="stroke-opacity" dur="750ms" values=".15;.1;0;1;.85;.7;.65;.55;.45;.35;.25;.15" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(300)"><animate attributeName="stroke-opacity" dur="750ms" values=".25;.15;.1;0;1;.85;.7;.65;.55;.45;.35;.25" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(330)"><animate attributeName="stroke-opacity" dur="750ms" values=".35;.25;.15;.1;0;1;.85;.7;.65;.55;.45;.35" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(0)"><animate attributeName="stroke-opacity" dur="750ms" values=".45;.35;.25;.15;.1;0;1;.85;.7;.65;.55;.45" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(30)"><animate attributeName="stroke-opacity" dur="750ms" values=".55;.45;.35;.25;.15;.1;0;1;.85;.7;.65;.55" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(60)"><animate attributeName="stroke-opacity" dur="750ms" values=".65;.55;.45;.35;.25;.15;.1;0;1;.85;.7;.65" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(90)"><animate attributeName="stroke-opacity" dur="750ms" values=".7;.65;.55;.45;.35;.25;.15;.1;0;1;.85;.7" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(120)"><animate attributeName="stroke-opacity" dur="750ms" values=".85;.7;.65;.55;.45;.35;.25;.15;.1;0;1;.85" repeatCount="indefinite"></animate></line><line y1="17" y2="29" transform="translate(32,32) rotate(150)"><animate attributeName="stroke-opacity" dur="750ms" values="1;.85;.7;.65;.55;.45;.35;.25;.15;.1;0;1" repeatCount="indefinite"></animate></line></g></svg></ion-spinner></div></div></body></html>

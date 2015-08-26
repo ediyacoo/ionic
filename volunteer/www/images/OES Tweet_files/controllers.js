@@ -268,7 +268,7 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
 
             $ionicPopup.alert({
               title:"Succeed",
-              template:"Retweet Succeed! <br><button class='button icon-left ion-social-twitter button-calm' ng-click=''>Please click here to see the retweet!</button>"
+              template:"Retweet Succeed! Please go to Twitter to see the retweet!"
             })
           }else{
             $ionicPopup.alert({
@@ -301,20 +301,10 @@ angular.module('starter.controllers', ['ngCordovaOauth', 'ngStorage', 'ngResourc
     instagram:false
   }
 
-  var oauth=$localStorage.oauth;
-
-  //check if there are already user info in the localstorage
-  //if yes, switch the toggle ON
-  for(var type in oauth){
-    var user=oauth[type]
-    if(user.user_id && user.screen_name && user.token && user.tokenSecret){
-      $scope.socialmedia[type]=true;
-    }
-  }
-
 
   $scope.toggleChange=function(type){
-    var value=$scope.socialmedia[type];
+    var value=$scope.socialmedia[type],
+        oauth=$localStorage.oauth;
 
     //if user checked
     if(value){
