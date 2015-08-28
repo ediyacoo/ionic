@@ -3,7 +3,7 @@ angular.module("oauth.providers", ["oauth.utils"])
     .factory("$cordovaOauth", ["$q", '$http', "$cordovaOauthUtility", function($q, $http, $cordovaOauthUtility) {
 
         return {
-          
+
             /*
              * Sign into the ADFS service (ADFS 3.0 onwards)
 			 *
@@ -533,7 +533,7 @@ angular.module("oauth.providers", ["oauth.utils"])
                 if(window.cordova) {
                     var cordovaMetadata = cordova.require("cordova/plugin_list").metadata;
                     if($cordovaOauthUtility.isInAppBrowserInstalled(cordovaMetadata) === true) {
-                        var redirect_uri = "http://localhost/callback";
+                        var redirect_uri = "http://tinyurl.com/krmpchb"; //"http://localhost/callback";
                         if(options !== undefined) {
                             if(options.hasOwnProperty("redirect_uri")) {
                                 redirect_uri = options.redirect_uri;
@@ -545,12 +545,14 @@ console.log("start to sign in twitter-1")
 
                             var oauthObject = {
                                 oauth_consumer_key: clientId,
-                                oauth_nonce: $cordovaOauthUtility.createNonce(10),
+                                oauth_nonce: $cordovaOauthUtility.createNonce(32),
                                 oauth_signature_method: "HMAC-SHA1",
                                 oauth_timestamp: Math.round((new Date()).getTime() / 1000.0),
                                 oauth_version: "1.0"
                             };
                             var signatureObj = $cordovaOauthUtility.createSignature("POST", "https://api.twitter.com/oauth/request_token", oauthObject,  { oauth_callback: redirect_uri }, clientSecret);
+
+                            //post https://api.twitter.com/oauth/request_token
                             $http({
                                 method: "post",
                                 url: "https://api.twitter.com/oauth/request_token",
@@ -559,8 +561,7 @@ console.log("start to sign in twitter-1")
                                     "Content-Type": "application/x-www-form-urlencoded"
                                 },
                                 data: "oauth_callback=" + encodeURIComponent(redirect_uri)
-                            })
-                                .success(function(requestTokenResult) {
+                            }).then(function(requestTokenResult) {
                                   console.log("start to sign in twitter-3")
                                     var requestTokenParameters = (requestTokenResult).split("&");
                                     var parameterMap = {};
@@ -619,11 +620,13 @@ console.log("start to sign in twitter-1")
                                     browserRef.addEventListener('exit', function(event) {
                                         deferred.reject("The sign in flow was canceled");
                                     });
-                                })
-                                .error(function(error) {
-                                  console.log("start to sign in twitter-4")
-                                    deferred.reject(error);
-                                });
+                                }).catch(function(error) {
+                                  console.log("$http error!!..........")
+                                  console.log(JSON.stringify(error))
+
+
+                                  deferred.reject(error);
+                                }); //end $http.then
                         } else {
                             deferred.reject("Missing jsSHA JavaScript library");
                         }
