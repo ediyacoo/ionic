@@ -69,7 +69,17 @@ angular.module('starter', ['ionic', 'starter.controllers'])
           controller: 'TweetListCtrl'
         }
       }
-    })
+  })
+
+  .state('app.volunteer', {
+      url: '/volunteer',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/volunteer.html',
+          controller: 'VolunteerCtrl'
+        }
+      }
+  })
 
   .state('app.settings', {
       url: '/settings',

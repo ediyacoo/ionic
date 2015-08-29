@@ -85,7 +85,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
   function createTwitterSignature(method, url){
     var twitterOauth=getStoredToken().twitter;
-    console.log(twitterOauth)
+
     if(twitterOauth && twitterOauth.oauth_token && twitterOauth.oauth_token_secret){
       var oauthObj={
             oauth_consumer_key: clientId,
@@ -96,8 +96,14 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
             oauth_version: "1.0"
           },
           signatureObj=$cordovaOauthUtility.createSignature(method, url, oauthObj, {}, clientSecret, twitterOauth.oauth_token_secret);
-      console.log(signatureObj.authorization_header)
+
       $http.defaults.headers.common.Authorization=signatureObj.authorization_header;
+
+      if(method=='POST'){
+        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+      }
+      //$http.defaults.headers.common["Content-Type"]="application/x-www-form-urlencoded";
+
     }
   }
 
@@ -122,29 +128,35 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     },
 
     isAuthenticated: function(){
-      return oauth.token !== null;
+      return $localStorage.oauth && $localStorage.oauth !== null && $localStorage.oauth.twitter !== null;
     },
 
     retweet: function(t){
       var deferred=$q.defer();
 
       if(t&&t.id_str){
-        var url="https://api.twitter.com/1.1/statuses/retweet/:tweetID.json";
+        var url="https://api.twitter.com/1.1/statuses/retweet/"+t.id_str+".json";
 
         //$resource
         createTwitterSignature("POST", url);
-        var retweet=$resource(url);
 
-        retweet.save({'tweetID':t.id_str}, null, function(result){
+        $resource(url).save(null, null, function(result){
           deferred.resolve(result);
         }, function(err){
           deferred.reject(err);
         });
+
       }else{
         deferred.reject("no tweet obj");
       }
 
       return deferred.promise;
+    },
+
+    getHomeTimeline: function(){
+      var home_tl_url = 'https://api.twitter.com/1.1/statuses/home_timeline.json';
+      createTwitterSignature('GET', home_tl_url);
+      return $resource(home_tl_url).query();
     }
 
   } //end return
@@ -269,14 +281,33 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
         oauth=$localStorage.oauth.twitter;
 
     if(t&&oauth&&oauth.user_id){
+
       //retweet
       //client side seems not working. There will be CORS (cross-domain issues)
       TwitterService.retweet(t).then(function(result){
         console.log(result)
         showAlert("Succeed", "Retweet Succeed! <br><button class='button icon-left ion-social-twitter button-calm' ng-click=''>Please click here to see the retweet!</button>")
       }, function(err){
-        showAlert("ERROR-RETWEET", JSON.stringify(err))
+        var title='ERROR-RETWEET',
+            msg=JSON.stringify(err)
+
+        //check error status==403
+        if(err.status&&err.status==403){
+          var errors=err.data.errors || null;
+
+          if(errors&&errors.length>0){
+            msg='<ul>';
+            errors.forEach(function(er, i){
+              msg+="<li>["+er.code+"] "+er.message+"</li>";
+            })
+            msg+="</ul>"
+          }
+        }
+
+        showAlert(title, msg);
       });
+
+
 
       /**
       //post back to server and let server to retweet
@@ -311,6 +342,74 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
 })
 
+
+//volunterr controller
+.controller("VolunteerCtrl", function($scope, mySharedService, TwitterService, $ionicModal, $localStorage, $q, $http, $ionicLoading, $ionicPopup){
+
+  if(TwitterService.isAuthenticated()){
+    findVolunteer();
+  }else{
+    //no twitter oauth information, need to login
+    // Create the login modal that we will use later
+    $ionicModal.fromTemplateUrl('templates/login.html', {scope: $scope}).then(function(modal) {
+      $scope.modal = modal;
+      $scope.modal.show();
+    });
+  }
+
+
+  //find volunteers in the most interest area
+  function findVolunteer(){
+    var oauth=$localStorage.oauth || null,
+        twitterOauth=(oauth)?oauth.twitter:null,
+        url="http://vision.sdsu.edu/hdma/volunteer/findVolunteer/"+twitterOauth.screen_name; //+"?callback=JSON_CALLBACK";
+
+    //show loading
+    $ionicLoading.show();
+
+    $http.get(url).then(function(result){
+      $ionicLoading.hide();
+
+      if(result&&result.data){
+        $scope.volunteers=result.data;
+        console.log(result)
+      }else{
+        $ionicPopup.alert({
+          title:"ERROR-FIND VOLUNTEERS",
+          template:"cannot find any volunteer based on your interested area"
+        })
+      }
+    }, function(err){
+      $ionicLoading.hide();
+
+      $ionicPopup.alert({
+        title:"ERROR-FIND VOLUNTEERS",
+        template:JSON.stringify(err)
+      })
+    })
+  }
+
+
+  //login
+  $scope.login=function(){
+    $ionicPlatform.ready(function(){
+
+      //twitter auth
+      TwitterService.initialize().then(function(result){
+        if(result){
+          $scope.modal.hide();
+          findVolunteer();
+        }
+      }, function(err){
+        $ionicPopup.alert({
+          title:"ERROR-FIND VOLUNTEERS",
+          template:JSON.stringify(err)
+        })
+      })
+    })
+  }
+
+})
 
 //setting controller
 .controller("SettingCtrl", function($scope, $localStorage, $http, mySharedService){
