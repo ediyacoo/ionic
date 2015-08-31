@@ -7,6 +7,8 @@
       </ion-item>
     </ion-list>
   -->
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshOESTweet()"></ion-refresher>
+
     <div class="list card" ng-repeat="t in tweetList" ng-click="click(t)" ng-if='t.user.screen_name=="ReadySanDiego"'>
       <div class='tweet-avatar'>
         <img src="{{t.user.profile_image_url_https}}">
@@ -26,7 +28,7 @@
 
 
   </ion-content>
-
+  <!--
   <ion-footer-bar type="bar-positive" >
     <div class="tabs tabs-icon-top tabs-striped">
       <a class="tab-item active" href='#/app/tweet'><i class="icon ion-social-twitter"></i>OES Tweets</a>
@@ -34,4 +36,5 @@
       <a class="tab-item" href='#/app/home'><i class="icon ion-gear-a"></i>Setting</a>
     </div>
   </ion-footer-bar>
+  -->
 </ion-view>
