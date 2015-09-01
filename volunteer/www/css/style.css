@@ -19,9 +19,11 @@
 
 .home .row .col {text-align:center; }
 .home .row {margin:100px 0px 100px 0px; }
-.home .title {margin-bottom:25px; margin-top:150px;   }
-.home .description {margin-top:25px; margin-bottom:150px;  }
+.home .title {margin-bottom:0px; margin-top:150px;   }
+.home .description {margin-top:0px; margin-bottom:150px;  }
+.home .description button {margin-top:30px; }
 .home img.logo {width:100px; height:100px; }
+
 
 
 .login * {text-align:center; }

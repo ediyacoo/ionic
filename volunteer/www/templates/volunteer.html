@@ -7,7 +7,7 @@
     <div class="list card" ng-repeat="v in volunteers" ng-click="click(v)" >
       <!--<p>{{v.twitteraccount}}</p>
       <p>{{v.emailaddress}}</p>-->
-      <p ng-repeat="(key,value) in v" class='volunteer-{{key}}' ng-if='key=="screen_name" || key=="emailaddress"'>{{value}}</p>
+      <p ng-repeat="(key,value) in v" class='volunteer-{{key}}' ng-if='key=="screenname" || key=="emailaddress"'>{{value}}</p>
     </div>
 
 
