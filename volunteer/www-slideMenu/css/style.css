@@ -1,0 +1,32 @@
+/* Empty. Add your own CSS if you like */
+
+.card {margin:30px 0px 30px 0px; }
+
+.tweet-avatar {height:100%; width:5%; float:left; padding-left:1%; padding-top:10px; }
+.tweet-avatar img {border-radius:50%; width:100%; height:100%; max-width:50px; max-height:50px;  }
+.tweet-body {width:95%; height:100%; float:left;}
+.tweet-username {font-size:1.5em; }
+
+.tweet-username span {font-size:0.8em; color:#999999; font-weight:normal; margin-left:10px; }
+.tweet-username span a {color:#999999; text-decoration:underline;}
+
+.tweet-text {font-size:1.5em; }
+.tweet-toolbox {padding:0px; margin:0px; list-style:none; width:100%; display:inline-block;  }
+.tweet-toolbox li {float:left; width:30%; padding:0% 1.5% 0% 1.5%; ; display:block ; text-align:center; }
+
+.tweet-media img {border-radius:10px; width:95%; max-width:600px;  }
+
+
+.home .row .col {text-align:center; }
+.home .row {margin:100px 0px 100px 0px; }
+.home .title {margin-bottom:0px; margin-top:150px;   }
+.home .description {margin-top:0px; margin-bottom:150px;  }
+.home .description button {margin-top:30px; }
+.home img.logo {width:100px; height:100px; }
+
+
+
+.login * {text-align:center; }
+
+
+.share .padding {text-align:center; }

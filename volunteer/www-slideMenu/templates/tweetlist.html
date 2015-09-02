@@ -1,0 +1,39 @@
+<ion-view view-title="OES Tweet">
+  <ion-content>
+    <!--
+    <ion-list>
+      <ion-item ng-repeat="t in tweetList" href="#/app/tweet/{{t.id}}">
+        {{t.text}}
+      </ion-item>
+    </ion-list>
+  -->
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshOESTweet()"></ion-refresher>
+
+    <div class="list card" ng-repeat="t in tweetList" ng-click="click(t)" ng-if='t.user.screen_name=="ReadySanDiego"'>
+      <div class='tweet-avatar'>
+        <img src="{{t.user.profile_image_url_https}}">
+      </div>
+      <div class='tweet-body'>
+        <h2 class='tweet-username'>{{t.user.name}}
+          <span class='tweet-screen_name'><a href='https://twitter.com/{{t.user.screen_name}}' target='_blank'>@{{t.user.screen_name}}</a></span>
+          <span class='tweet-datetime'> {{moment(t.created_at_local).format("MM-DD-YYYY hh:mm:ss a")}}</span>
+        </h2>
+        <p class='tweet-text'>{{t.text}}</p>
+        <p class='tweet-media' ng-if='t.entities&&t.entities.media&&t.entities.media.length>0'>
+          <img src="{{t.entities.media[0].media_url_https}}">
+        </p>
+
+      </div>
+    </div>
+
+
+  </ion-content>
+  <ion-footer-bar type="bar-positive" >
+    <div class="tabs tabs-icon-top tabs-striped">
+      <a class="tab-item active" href='#/app/tweet'><i class="icon ion-social-twitter"></i>OES Tweets</a>
+      <a class="tab-item" href='#/app/volunteer'><i class="icon ion-person-stalker"></i>Find Volunteers</a>
+      <a class="tab-item" href='#/app/settings'><i class="icon ion-gear-a"></i>Setting</a>
+      <a class="tab-item" href='#/app/about'><i class="icon ion-android-home"></i>About</a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

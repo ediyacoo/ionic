@@ -1,0 +1,17 @@
+<ion-view view-title="Social Media Settings" >
+  <ion-content>
+    <ul class="list">
+      <ion-toggle toggle-class="toggle-calm" ng-model='socialmedia.twitter' ng-change='toggleChange("twitter")' ><i class='icon ion-social-twitter'>  Twitter</i></ion-toggle>
+      <ion-toggle toggle-class="toggle-assertive" ng-model='socialmedia.facebook' ng-change='toggleChange("facebook")'><i class='icon ion-social-facebook'>  Facebook</i></ion-toggle>
+      <ion-toggle toggle-class="toggle-energized" ng-model='socialmedia.instagram' ng-change='toggleChange("instagram")'><i class='icon ion-social-instagram' >  Instagram</i></ion-toggle>
+    </ul>
+  </ion-content>
+  <ion-footer-bar type="bar-positive" >
+    <div class="tabs tabs-icon-top tabs-striped">
+      <a class="tab-item" href='#/app/tweet'><i class="icon ion-social-twitter"></i>OES Tweets</a>
+      <a class="tab-item" href='#/app/volunteer'><i class="icon ion-person-stalker"></i>Find Volunteers</a>
+      <a class="tab-item active" href='#/app/settings'><i class="icon ion-gear-a"></i>Setting</a>
+      <a class="tab-item" href='#/app/about'><i class="icon ion-android-home"></i>About</a>
+    </div>
+  </ion-footer-bar>
+</ion-view>

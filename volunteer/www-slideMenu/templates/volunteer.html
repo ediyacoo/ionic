@@ -1,0 +1,25 @@
+<ion-view view-title="Find Volunteer">
+  <ion-content>
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshVolunteer()"></ion-refresher>
+
+    <h2 class='title'>Find a volunteer in your interested area: {{interestedArea}}</h2>
+
+    <div class="list card" ng-repeat="v in volunteers" ng-click="click(v)" >
+      <!--<p>{{v.twitteraccount}}</p>
+      <p>{{v.emailaddress}}</p>-->
+      <p ng-repeat="(key,value) in v" class='volunteer-{{key}}' ng-if='key=="screenname" || key=="emailaddress"'>{{value}}</p>
+    </div>
+
+
+  </ion-content>
+
+  <ion-footer-bar type="bar-positive" >
+    <div class="tabs tabs-icon-top tabs-striped">
+      <a class="tab-item" href='#/app/tweet'><i class="icon ion-social-twitter"></i>OES Tweets</a>
+      <a class="tab-item active" href='#/app/volunteer'><i class="icon ion-person-stalker"></i>Find Volunteers</a>
+      <a class="tab-item" href='#/app/settings'><i class="icon ion-gear-a"></i>Setting</a>
+      <a class="tab-item" href='#/app/about'><i class="icon ion-android-home"></i>About</a>
+    </div>
+  </ion-footer-bar>
+
+</ion-view>

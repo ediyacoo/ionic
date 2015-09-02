@@ -5,8 +5,8 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 .factory('mySharedService', function($location, $http, $q, $localStorage, TwitterService, $ionicPlatform, $ionicPopup) {
   //***************************************************************
   //test only
-  $localStorage.$reset();
-  console.log("clear localStorage")
+  //$localStorage.$reset();
+  //console.log("clear localStorage")
   //***************************************************************
 
   return {
@@ -204,6 +204,10 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     //show popup
     showPopup: function(type, options, error){
       options=options || {}
+
+      if(options.buttons===null){
+        delete options.buttons;
+      }
 
       if($ionicPopup[type]){
         return $ionicPopup[type](options)
@@ -583,7 +587,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
       $ionicLoading.hide();
 
       //switch to tweetlist page
-      $state.go("app.tweet");
+      $state.go("tab.tweet");
     }, function(err){
       mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
     })
@@ -593,6 +597,6 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
   //get started
   $scope.getStarted=function(){
     //switch to tweetlist page
-    $state.go("app.tweet");
+    $state.go("tab.tweet");
   }
 })

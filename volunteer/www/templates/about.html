@@ -1,24 +1,35 @@
 <ion-view view-title="About">
   <ion-content>
-    <div class='home'>
-      <!-- title-->
-      <div class='row title'>
-        <div class='col'>
-          <h2>OES Volunteer</h2>
-        </div>
-      </div>
-
-
+    <div class='about'>
 
       <!-- description-->
-      <div class='row description'>
-        <div class='col'>
-            We need your helps to diseminate emergency tweets <br>to the world!<Br>
-            <!--get started-->
-            <button class="button icon-left ion-play button-calm" ng-click='getStarted()'>&nbsp; Get Started</button>
+      <div class='description'>
+        Your participation ensures that each OES message will be delivered to our San Diego community members in a timely and efficient manner during crisis or disaster situations.
+        <p></p>
+        Goals of this volunteer program:
+        <ul>
+          <li>Improve the Alert Warning effectiveness during crisis or disaster situations</li>
+          <li>Monitor social media messages and provide real-time observations from the emergency</li>
+        </ul>
+        <p></p>Our collaborative efforts will result in improving our community response to emergencies and the safety of residents. Let's work together to keep San Diego safe!
+
+        <p></p>For more information, please visit:
+        <div class='list'>
+          <!--<div class='item item-divider'>For more information, please visit</div>-->
+          <a class='item item-icon-left' href="http://socialmedia.sdsu.edu/" target='_blank'><i class='icon ion-android-globe'></i>IBSS Website</a>
+          <a class='item item-icon-left' href="http://socialmedia.sdsu.edu/" target='_blank'><i class='icon ion-android-globe'></i>Volunteer Signup Webpage</a>
+          <a class='item item-icon-left' href="http://humandynamics.sdsu.edu/" target='_blank'><i class='icon ion-android-globe'></i>Human Dynamics Center, SDSU</a>
+          <a class='item item-icon-left' href="https://twitter.com/readysandiego" target='_blank'><i class='icon ion-social-twitter'></i>Twitter (@readysandiego)</a>
+          <a class='item item-icon-left' href="https://twitter.com/hdma_sdsu" target='_blank'><i class='icon ion-social-twitter'></i>Twitter (@hdma_sdsu)</a>
+          <a class='item item-icon-left' href="https://www.facebook.com/pages/Center-for-Human-Dynamics-in-the-Mobile-Age/560674040702520" target='_blank'><i class='icon ion-social-facebook'></i>Facebook (HDMA)</a>
+          <a class='item item-icon-left' href="https://plus.google.com/u/0/102047006033717554650/posts" target='_blank'><i class='icon ion-social-googleplus'></i>Google+ (HDMA)</a>
         </div>
+
       </div>
 
+      <!--links-->
+
+      <P></P>
       <!-- logo-->
       <div class='row logo'>
         <div class='col'><img class='logo' src='images/HDMA_Logo_Small_squre.png' /></div>
@@ -28,13 +39,4 @@
     </div>
 
   </ion-content>
-
-  <ion-footer-bar type="bar-positive" >
-    <div class="tabs tabs-icon-top tabs-striped">
-      <a class="tab-item" href='#/app/tweet'><i class="icon ion-social-twitter"></i>OES Tweets</a>
-      <a class="tab-item" href='#/app/volunteer'><i class="icon ion-person-stalker"></i>Find Volunteers</a>
-      <a class="tab-item" href='#/app/settings'><i class="icon ion-gear-a"></i>Setting</a>
-      <a class="tab-item active" href='#/app/about'><i class="icon ion-android-home"></i>About</a>
-    </div>
-  </ion-footer-bar>
 </ion-view>
