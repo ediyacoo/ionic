@@ -186,7 +186,11 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
           if(result&&result.data&&result.data.isValidate){
             defer.resolve(result.data)
 
-            that.volunteers=result.data.volunteers || [];
+            //sort volunteer by twitter account
+            var volunteers=result.data.volunteers || [];
+            volunteers.sort(function(a,b){return a.twitteraccount > b.twitteraccount})
+
+            that.volunteers=volunteers || [];
           }else{
             defer.reject({code:"CheckVolunteer-not-signup", error:result})
           }
@@ -475,7 +479,55 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
         $scope.volunteers=mySharedService.volunteers;
       }
     }else{
-      $scope.modal.show();
+      //test only
+      if(mySharedService.mobileAndTabletcheck()){
+        $scope.modal.show();
+      }else{
+        //test only
+        $scope.volunteers=[
+          {
+            "updated": "2015-08-31T17:27:27.743Z",
+            "timestamp": "8/28/2015 17:11:58",
+            "name": "hdma sdsu",
+            "emailaddress": "hdmasdsu@gmail.com",
+            "phonenumber": {
+              "$t": ""
+            },
+            "twitteraccount": "hdmasdsu",
+            "twitteraccountaccess": "Yes",
+            "gender": "N/A",
+            "age": "25 - 34",
+            "howlonghaveyouusedtwitter": "4 years",
+            "areyouproficientinanyotherlanguages": "Spanish, Tagalog, Vietnamese, Korean, Japanese, Mandarin/Chinese, Arabic",
+            "mostimportantareatoyou": "Central:  Central San Diego Neighborhoods  (92101- 92117, 92119- 92124, 92126- 92140, 92142, 92145, 92147, 92149, 92150)",
+            "secondarea_3": "North:  Fallbrook  (92028, 92088)",
+            "thirdarea_3": "North:  Fallbrook  (92028, 92088)",
+            "individualorgrouprepresentative": "Individual"
+          },
+          {
+            "updated": "2015-08-31T17:27:27.743Z",
+            "timestamp": "8/30/2015 19:37:57",
+            "name": "April Anderson",
+            "emailaddress": "april.m.anderson05@gmail.com",
+            "phonenumber": "619-490-5750",
+            "twitteraccount": "@knowmad05",
+            "twitteraccountaccess": "Yes",
+            "gender": "Transgender",
+            "age": "25 - 34",
+            "howlonghaveyouusedtwitter": "3 years",
+            "areyouproficientinanyotherlanguages": {
+              "$t": ""
+            },
+            "mostimportantareatoyou": "Central:  Central San Diego Neighborhoods  (92101- 92117, 92119- 92124, 92126- 92140, 92142, 92145, 92147, 92149, 92150)",
+            "secondarea_3": "North:  Escondido, Del Dios, Elfin Forest, Harmony Grove  (92023- 92027, 92029, 92030, 92033, 92046)",
+            "thirdarea_3": "Central:  Central San Diego Neighborhoods  (92152- 92155, 92158- 92172, 92174- 92177, 92179, 92182, 92184, 92186, 92187, 92190- 92199)",
+            "individualorgrouprepresentative": "Individual"
+          }
+        ].sort(function(a,b){return a.twitteraccount > b.twitteraccount});
+      }
+
+
+    //  $scope.modal.show();
     }
   });
 
@@ -512,6 +564,27 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
   //clse modal
   $scope.closeModal=function(){
     $scope.modal.hide();
+  }
+
+  //link
+  $scope.link=function(type, obj){
+    type=type || null
+
+    var name=obj.twitteraccount || null,
+        email=obj.emailaddress || null;
+    name=(name&&name.charAt(0)=='@')?name.replace("@",""):name;
+
+    if(name || email){
+      switch(type){
+        case "twitter":
+          window.open("https://twitter.com/"+name);
+        break;
+        case "email":
+
+        break;
+      }
+    }
+
   }
 
 })
