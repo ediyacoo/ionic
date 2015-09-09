@@ -3,6 +3,10 @@
 .card {margin:10px 0px 10px 0px; }
 .card:hover {background-color:#f1f1f1; }
 
+
+.tweet-tabs {top:0px !important; position:relative; }
+.tweet-listCard {margin-top:-9px; }
+
 .tweet-avatar {text-align:center; }
 .tweet-avatar img {border-radius:50%; width:90%; height:90%; margin:5%; max-height:50px; max-width:50px;   }
 

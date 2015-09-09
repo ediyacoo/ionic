@@ -113,7 +113,28 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
       $http.jsonp("http://vision.sdsu.edu/hdma/volunteer/tweets?callback=JSON_CALLBACK")
         .success(function(json){
           if(json&&json.length>0){
-            $defer.resolve(json);
+            var result={top:[], today:[], historical:[], all:json},
+                m_timestamp, m_today=moment().utc(), dateFormat="MM-DD-YYYY";
+
+            //parse by date
+            json.forEach(function(t, i){
+              m_timestamp=moment.utc(t.created_at);
+              if(i<5){
+                result.top.push(t)
+              }else{
+                if(m_timestamp.format(dateFormat)==m_today.format(dateFormat)){
+                  result.today.push(t)
+                }else{
+                  result.historical.push(t)
+                }
+              }
+            })
+
+            if(result.today.length==0){
+              result.today=[{text:"no OES tweet on " +m_today.format(dateFormat) , user:{screen_name:"ReadySanDiego"}}];
+            }
+
+            $defer.resolve(result);
           }else{
             $defer.reject({code:"getOESTweet-length=0", error:null});
           }
@@ -261,7 +282,8 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     $ionicLoading.show();
 
     mySharedService.getOESTweet().then(function(json){
-      $scope.tweetList=json
+      $scope.oesTweet=json;
+      $scope.tweetList=json[$scope.selectedTab];
 
       //hide loading icon
       $ionicLoading.hide();
@@ -283,11 +305,34 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
   });
 
 
+  //oes tweet
+  $scope.oesTweet={}
+
+  //selected tab
+  $scope.selectedTab="top";
+
+
+  //change tweetlist
+  $scope.changeTweetList=function(type){
+    $scope.selectedTab=type;
+
+    var output=$scope.oesTweet[type];
+    if(output){
+      //change tweetList Source;
+      $scope.tweetList=output;
+      console.log($scope.tweetList)
+    }
+  }
+
+
+
+
 
   //refresh oes tweet
   $scope.refreshOESTweet=function(){
     mySharedService.getOESTweet().then(function(result){
-      $scope.tweetList=result;
+      $scope.oesTweet=result
+      $scope.tweetList=result[$scope.selectedTab];
       $scope.$broadcast('scroll.refreshComplete')
     }, function(err){
       mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
