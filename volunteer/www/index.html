@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <!--<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">-->
-    <meta http-equiv="Content-Security-Policy" content="default-src &apos;self&apos; https: http: data: gap: https://ssl.gstatic.com &apos;unsafe-inline&apos; &apos;unsafe-eval&apos;; style-src &apos;self&apos; &apos;unsafe-inline&apos;; media-src *; connect-src &apos;self&apos; https: http:; script-src &apos;self&apos; http: https: ;img-src &apos;self&apos; http: https:">
+    <meta http-equiv="Content-Security-Policy" content="default-src &apos;self&apos; https: http: data: gap: https://ssl.gstatic.com &apos;unsafe-inline&apos; &apos;unsafe-eval&apos;; style-src &apos;self&apos; &apos;unsafe-inline&apos;; media-src *; connect-src &apos;self&apos; ws: https: http:; script-src &apos;self&apos; http: https: &apos;unsafe-inline&apos; &apos;unsafe-eval&apos; ;img-src &apos;self&apos; http: https:">
 
     <title>IBSS Volunteer APP</title>
 
@@ -17,6 +17,8 @@
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/ionic-service-core/ionic-core.js"></script>
+    <script src="lib/ionic-service-push/ionic-push.js"></script>
     <script src="lib/ionic/js/angular/angular-resource.min.js"></script>
     <script src="lib/ng-twitter-api/dist/ng-twitter-api.min.js"></script>
 

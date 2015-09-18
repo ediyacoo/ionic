@@ -4,19 +4,19 @@
     <button class="button button-icon button-clear ion-home"></button>
   </ion-nav-buttons>
 -->
+<ion-header-bar class="bar-subheader tweet-subheader" >
+  <!-- tabs-top -->
+  <div class="tweet-tabs tabs ">
+    <a class="tab-item active" ng-class="{'active':selectedTab=='top'}" ng-click="changeTweetList('top')">Most Recent</a>
+    <a class="tab-item" ng-class="{'active':selectedTab=='today'}" ng-click="changeTweetList('today')">Today</a>
+    <a class="tab-item" ng-class="{'active':selectedTab=='historical'}" ng-click="changeTweetList('historical')">Historical</a>
+  </div>
+</ion-header-bar>
+
+
   <ion-content>
 
     <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshOESTweet()"></ion-refresher>
-
-    <!-- tabs-top -->
-    <div class="tweet-tabs tabs tabs-top">
-      <a class="tab-item active" ng-class="{'active':selectedTab=='top'}" ng-click="changeTweetList('top')">Top 5</a>
-      <a class="tab-item" ng-class="{'active':selectedTab=='today'}" ng-click="changeTweetList('today')">Today</a>
-      <a class="tab-item" ng-class="{'active':selectedTab=='historical'}" ng-click="changeTweetList('historical')">Historical</a>
-    </div>
-
-
-
 
     <!-- content-->
     <div class='tweet-listCard'>

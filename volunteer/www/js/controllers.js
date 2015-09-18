@@ -2,7 +2,7 @@
 angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', 'ngTwitter', 'service-oauth'])
 
 //create shared service functions
-.factory('mySharedService', function($location, $http, $q, $localStorage, TwitterService, $ionicPlatform, $ionicPopup) {
+.factory('mySharedService', function($location, $http, $q, $localStorage, TwitterService, $ionicPlatform, $ionicPopup, $ionicUser, $ionicPush, $rootScope) {
   //***************************************************************
   //test only
   //$localStorage.$reset();
@@ -34,7 +34,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
                     //get user profile and save back to db
                     TwitterService.getUserProfile(result.screen_name).then(function(userProfile){
                       //save user actitvites
-                      $http.post("http://vision.sdsu.edu/hdma/volunteer/userActivity", {type:"userProfile", userProfile:userProfile}).then(function(success){
+                      $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"userProfile", userProfile:userProfile}, {headers:{"Authorization":null, "Content-Type":"application/json"}}).then(function(success){
                         if(success.data&&success.data.status!='success'){
                           defer.reject({code:"userActivity-error", error:success.data})
                         }
@@ -244,6 +244,81 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     },
 
 
+    //identify ionic user
+    identifyIonicUser: function(){
+      var user=$ionicUser.get(),
+          q=$q.defer(),
+          twitterOauth=this.getOauth("twitter"),
+          screen_name=(twitterOauth&&twitterOauth.screen_name)?twitterOauth.screen_name:null;
+
+      //console.log(twitterOauth)
+
+      if(!user.user_id){
+        // Set your user_id here, or generate a random one.
+        user.user_id = $ionicUser.generateGUID();
+      }
+
+      //twitter obj
+      user.twitter={
+        screen_name:screen_name
+      };
+
+      // Add some metadata to your user object.
+      angular.extend(user, {
+        name: (screen_name)?screen_name:"HDMA-"+user.user_id
+      });
+
+      // Identify your user with the Ionic User Service
+      $ionicUser.identify(user).then(function(){
+        q.resolve(user)
+
+        //console.log('Identified user ' + user.name + '\n ID ' + user.user_id);
+      }, function(err){
+        q.reject(err);
+      });
+
+      return q.promise;
+    },
+
+
+    //pushRegister
+    pushRegister: function(){
+      // Register with the Ionic Push service.  All parameters are optional.
+      $ionicPush.register({
+        canShowAlert: true, //Can pushes show an alert on your screen?
+        canSetBadge: true, //Can pushes update app icon badges?
+        canPlaySound: true, //Can notifications play a sound?
+        canRunActionsOnWake: true, //Can run actions outside the app,
+        onNotification: function(notification) {
+          // Handle new push notifications here
+          console.log(notification)
+
+          if(notification["$state"]) {
+            //prompt the user to switch
+            navigator.notification.confirm("You have a new chat - go to it?", function(btn) {
+              if(btn === 1) {
+                $state.go(notification["$state"]);
+              }
+            },"New Chat!")
+          }
+
+          return true;
+        }
+      });
+    },
+
+
+    //post device info
+    postDeviceInfo: function(info){
+      $http.post("http://vision.sdsu.edu/hdma/volunteer/post/deviceInfo", {info:info}).then(function(result){
+        console.log(result)
+      }, function(err){
+        console.log(err);
+      })
+
+    },
+
+
     //error code and description
     error:{
       "$http-error":"$http error",
@@ -261,6 +336,39 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
   };
 })
 
+//init run
+.run(function($ionicPlatform, $rootScope, mySharedService, $localStorage){
+  $ionicPlatform.ready(function(){
+    var device_user=null;
+
+    //test clear oauth
+    //$localStorage.oauth=null
+
+    // Handles incoming device tokens
+    $rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
+      if(device_user&&data){
+        var obj=device_user;
+        obj.token=data.token;
+        obj.platform=data.platform;
+
+        console.log("Successfully registered token " + data.token);
+        console.log(obj)
+
+        mySharedService.postDeviceInfo(obj)
+      }
+      //$scope.token = data.token;
+    });
+
+
+
+    mySharedService.identifyIonicUser().then(function(user){
+        device_user=user;
+        mySharedService.pushRegister()
+    });
+
+
+  })
+})
 
 
 
@@ -414,12 +522,26 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
       TwitterService.retweet(t).then(function(result){
         console.log(result)
 
+        //save user actitvites
+        $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"retweet", retweet:{user_id:oauth.user_id, tweet_id:t.id_str}}, {headers:{"Authorization":null, "Content-Type":"application/json"}}).then(function(success){
+          if(success.data&&success.data.status!='success'){
+            console.log({code:"userActivity-err", error:success.data})
+          }else{
+            console.log("user actitvities succeed!!!!")
+          }
+        }, function(failure){
+          console.log({code:"userActivity-error", error:failure})
+        });
+
+
+        //show popup
         mySharedService.showPopup("show", {title:"Retweet Succeed!", template:"Please click on the folowing button to see the retweet", buttons:[
           {text:"Cancel"},
           {text:"See Retweet", type:"button-positive", onTap: function(e){
             window.open("https://www.twitter.com/"+oauth.screen_name)
           }}
         ]});
+
       }, function(err){
         var title='ERROR-RETWEET',
             msg=JSON.stringify(err)
@@ -693,7 +815,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
 
 //home controller
-.controller('HomeCtrl', function($scope, $ionicLoading, $ionicPopup, $state, mySharedService){
+.controller('HomeCtrl', function($scope, $ionicLoading, $ionicPopup, $state, mySharedService, $rootScope){
   //check cached tweets
   if(!mySharedService.tweets || mySharedService.tweets.lenght==0){
     //show loading icon
@@ -710,6 +832,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
       mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
     })
   }
+
 
 
   //get started
