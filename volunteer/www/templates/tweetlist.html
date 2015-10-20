@@ -1,4 +1,4 @@
-<ion-view view-title="OES Tweet">
+<ion-view view-title="SD Emergency Tweets">
   <!--
   <ion-nav-buttons side="right" ng-show="false" ng-click="$state.go('home')">
     <button class="button button-icon button-clear ion-home"></button>
@@ -31,7 +31,7 @@
             <h2 class='tweet-username'>
               {{t.user.name}}
               <span class='tweet-screen_name'><a href='https://twitter.com/{{t.user.screen_name}}' target='_blank'>@{{t.user.screen_name}}</a></span>
-              <span class='tweet-datetime'> {{moment(t.created_at_local).format("MM-DD-YYYY hh:mm:ss a")}}</span>
+              <span class='tweet-datetime'> {{moment(t.created_at).format("MM-DD-YYYY hh:mm:ss a")}}</span>
             </h2>
           </div>
         </div>

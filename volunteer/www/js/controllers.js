@@ -2,7 +2,7 @@
 angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', 'ngTwitter', 'service-oauth'])
 
 //create shared service functions
-.factory('mySharedService', function($location, $http, $q, $localStorage, TwitterService, $ionicPlatform, $ionicPopup, $ionicUser, $ionicPush, $rootScope) {
+.factory('mySharedService', function($location, $http, $q, $localStorage, TwitterService, $ionicPlatform, $ionicPopup, $ionicUser, $ionicPush, $rootScope, $cordovaDialogs, $state, $cordovaDevice, $cordovaAppAvailability) {
   //***************************************************************
   //test only
   //$localStorage.$reset();
@@ -114,19 +114,22 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
         .success(function(json){
           if(json&&json.length>0){
             var result={top:[], today:[], historical:[], all:json},
-                m_timestamp, m_today=moment().utc(), dateFormat="MM-DD-YYYY";
+                m_timestamp, m_today=moment(), dateFormat="MM-DD-YYYY";
 
             //parse by date
             json.forEach(function(t, i){
-              m_timestamp=moment.utc(t.created_at);
+              m_timestamp=moment(t.created_at);
+
+              //most recent 5 tweets
               if(i<5){
                 result.top.push(t)
+              }
+
+              //today and historical tweets
+              if(m_timestamp.format(dateFormat)==m_today.format(dateFormat)){
+                result.today.push(t)
               }else{
-                if(m_timestamp.format(dateFormat)==m_today.format(dateFormat)){
-                  result.today.push(t)
-                }else{
-                  result.historical.push(t)
-                }
+                result.historical.push(t)
               }
             })
 
@@ -249,7 +252,8 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
       var user=$ionicUser.get(),
           q=$q.defer(),
           twitterOauth=this.getOauth("twitter"),
-          screen_name=(twitterOauth&&twitterOauth.screen_name)?twitterOauth.screen_name:null;
+          screen_name=(twitterOauth&&twitterOauth.screen_name)?twitterOauth.screen_name:null,
+          that=this;
 
       //console.log(twitterOauth)
 
@@ -292,32 +296,135 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
         onNotification: function(notification) {
           // Handle new push notifications here
           console.log(notification)
+          //console.log(navigator)
 
-          if(notification["$state"]) {
-            //prompt the user to switch
-            navigator.notification.confirm("You have a new chat - go to it?", function(btn) {
-              if(btn === 1) {
-                $state.go(notification["$state"]);
-              }
-            },"New Chat!")
+          var platform=notification.platform,
+              payload=notification.payload;
+
+          //notificationReceived
+          function notificationReceived(info){
+            //if get the message, broadcast first to get the tweet
+            $rootScope.$broadcast("pushNotificationReceived", info)
+
+            $state.go("tab.tweet");
           }
+
+
+          //chck notification event
+          switch(notification.event){
+              case 'message':
+
+
+
+                  // if this flag is set, this notification happened while we were in the foreground.
+                  // you might want to play a sound to get the user's attention, throw up a dialog, etc.
+                  if(notification.foreground){
+                      //var res=confirm(notification.payload.message);
+                      $cordovaDialogs.confirm(notification.payload.message, "Volunteer APP", ["Retweet", "Cancle"]).then(function(buttonIndex){
+                        switch(buttonIndex){
+                          case 0:
+                            //no button
+                          break;
+                          case 1:
+                          case true:
+                            //retweet
+                            notificationReceived(payload.payload)
+                          break;
+                          case 2:
+                          case false:
+                            //cancel
+                          break;
+                        }
+                      });
+                  }else{
+                      // otherwise we were launched because the user touched a notification in the notification tray.
+                      if (notification.coldstart){
+                        console.log('--COLDSTART NOTIFICATION--' + '');
+                      }else{
+                        console.log('--BACKGROUND NOTIFICATION--' + '');
+                      }
+
+                      //retweet
+                      notificationReceived(payload.payload);
+                  }
+              break;
+              case 'error':
+                  console.log('ERROR -&gt; MSG:' + notification.message + '');
+              break;
+              default:
+                  console.log('EVENT -&gt; Unknown, an event was received and we do not know what it is');
+              break;
+          }
+
+          return;
 
           return true;
         }
+      }).then(function(result){
+        console.log("$ionic push: user registered")
+        console.log(result);
       });
+
+
+
+      //unregister //not finished
+      $ionicPush.unregister().then(function(result){
+        console.log("unregister!")
+        console.log(result)
+      })
+
     },
 
 
     //post device info
     postDeviceInfo: function(info){
       $http.post("http://vision.sdsu.edu/hdma/volunteer/post/deviceInfo", {info:info}).then(function(result){
-        console.log(result)
+        //console.log(result)
       }, function(err){
-        console.log(err);
+        //console.log(err);
       })
 
     },
 
+    //get external app link
+    checkApp: function(app_name){
+      var platform=null,
+          schemes={
+            "twitter":{"android":"com.twitter.android", "ios":"twitter://"},
+            "faceboook":{"android":"com.facebook.katana", "ios":"fb://"},
+            "whatsapp":{"android":"com.whatapp", "ios":"whatsapp://"}
+          },
+          defer=$q.defer();
+
+      if(!this.device_user){defer.reject("have not got the device info. please wait a while and try again.")};
+
+
+      platform=this.device_user.platform || "android";
+
+      if(app_name&&app_name!=""){
+        var scheme=(schemes[app_name.toLowerCase()])?schemes[app_name.toLowerCase()][platform]:null;
+
+        if(scheme){
+          //check if the app is avaiable
+          $cordovaAppAvailability.check(scheme).then(function(){
+            //yes
+            defer.resolve(true)
+          }, function(){
+            //no
+            defer.reject(app_name.toLowerCase()+" is not avaiable");
+          });
+        }else{
+          defer.reject("no matched scheme");
+        }
+      }else{
+        defer.reject("no app_name");
+      }
+
+      return defer.promise;
+    },
+
+    //device_user
+    device_user:null,
 
     //error code and description
     error:{
@@ -336,6 +443,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
   };
 })
 
+
 //init run
 .run(function($ionicPlatform, $rootScope, mySharedService, $localStorage){
   $ionicPlatform.ready(function(){
@@ -350,6 +458,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
         var obj=device_user;
         obj.token=data.token;
         obj.platform=data.platform;
+        obj.install=true;
 
         console.log("Successfully registered token " + data.token);
         console.log(obj)
@@ -360,10 +469,16 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     });
 
 
-
     mySharedService.identifyIonicUser().then(function(user){
         device_user=user;
         mySharedService.pushRegister()
+
+        //store user into mySharedService
+        mySharedService.device_user=user;
+
+        console.log("finished identify ionic user")
+        console.log(user)
+        console.log("_________________________________________")
     });
 
 
@@ -381,8 +496,45 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
 
 //tweet list controller
-.controller("TweetListCtrl", function($scope, $localStorage, $http,  $ionicModal, $ionicLoading, $ionicPopup, mySharedService, TwitterService,  $ionicPlatform){
+.controller("TweetListCtrl", function($scope, $localStorage, $q, $http,  $ionicModal, $ionicLoading, $ionicPopup, mySharedService, TwitterService,  $ionicPlatform, $stateParams){
   $scope.moment=mySharedService.moment;
+
+  //on pushNotificationReceived
+  $scope.$on("pushNotificationReceived", function(e, payload){
+    //console.log("pushNotificationReceived...................")
+    //console.log(payload)
+
+    if(payload.tweet_id){
+      //show loading
+      $ionicLoading.show();
+
+      $scope.refreshOESTweet().then(function(){
+        if($scope.oesTweet&&$scope.oesTweet.all){
+          var tweets=$scope.oesTweet.all, t, tweet;
+
+          //parse all tweets to find out the tweet which id_Str matches payload.tweet_id
+          for(var i=0, l=tweets.length; i<l; i++){
+              t=tweets[i];
+              if(t.id_str==payload.tweet_id){
+                tweet=t
+                break;
+              }
+          }
+
+          if(tweet){
+            $scope.click(tweet);
+          }
+
+          //hide loading
+          $ionicLoading.hide();
+        }
+      });
+    }
+
+  })
+
+
+
 
   //if there is no existed tweets, manully get tweets
   if(!mySharedService.tweets || mySharedService.tweets.length==0){
@@ -438,13 +590,20 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
   //refresh oes tweet
   $scope.refreshOESTweet=function(){
+    var defer=$q.defer();
+
     mySharedService.getOESTweet().then(function(result){
       $scope.oesTweet=result
       $scope.tweetList=result[$scope.selectedTab];
-      $scope.$broadcast('scroll.refreshComplete')
+      $scope.$broadcast('scroll.refreshComplete');
+
+      defer.resolve();
     }, function(err){
       mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
+      defer.reject();
     })
+
+    return defer.promise;
   }
 
 
@@ -453,6 +612,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
   $scope.click=function(t){
     console.log(t)
     $scope.t=t
+
 
     //check if a user is logged in
     var oauth=$localStorage.oauth;
@@ -538,7 +698,16 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
         mySharedService.showPopup("show", {title:"Retweet Succeed!", template:"Please click on the folowing button to see the retweet", buttons:[
           {text:"Cancel"},
           {text:"See Retweet", type:"button-positive", onTap: function(e){
-            window.open("https://www.twitter.com/"+oauth.screen_name)
+            //check twitter api
+            mySharedService.checkApp("twitter").then(function(){
+              window.open("twitter://user?screen_name="+oauth.screen_name, "_system", "location=no");
+              $scope.modal.hide();
+            }, function(err){
+              if(err=="twitter is not avaiable"){
+                window.open("https://twitter.com/"+oauth.screen_name, "_system", "location=no");
+                $scope.modal.hide();
+              }
+            });
           }}
         ]});
 
@@ -561,35 +730,6 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
         mySharedService.showPopup("alert", {title:title, template:msg}, err);
       });
-
-
-
-      /**
-      //post back to server and let server to retweet
-      $http.post("http://vision.sdsu.edu/hdma/volunteer/retweet", {user_id: oauth.user_id, screen_name:oauth.screen_name, tweet_id: t.id_str, token: oauth.token, tokenSecret: oauth.tokenSecret}).then(function(result){
-        if(result.status==200 && result.statusText=="OK"){
-          console.log(result)
-          var data=result.data,
-              t=data.data;
-
-          if(t){
-            //if there is an error while retweeting
-            if(t.errors&&t.errors.length>0){
-              showAlert("ERROR-RETWEET", JSON.stringify(t.errors[0].message))
-              return;
-            }
-
-            showAlert("Succeed", "Retweet Succeed! <br><button class='button icon-left ion-social-twitter button-calm' ng-click=''>Please click here to see the retweet!</button>")
-          }else{
-            showAlert("ERROR-RETWEET", JSON.stringify(data.error))
-          }
-
-
-        }
-      }, function(err){
-        showAlert("ERROR-RETWEET", JSON.stringify(err));
-      });
-      */
 
     }
   }
@@ -618,6 +758,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     if(oauth_twitter && oauth_twitter.screen_name){
       mySharedService.checkVolunteer(oauth_twitter.screen_name).then(function(result){
         $scope.volunteers=result.volunteers;
+        $scope.interestedArea=result.interestedArea;
 
         switch(type){
           case "normal":
@@ -704,6 +845,9 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     findVolunteer('refresh');
   }
 
+  //interested area
+  $scope.interestedArea="";
+
 
   //login
   $scope.login=function(){
@@ -744,7 +888,14 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     if(name || email){
       switch(type){
         case "twitter":
-          window.open("https://twitter.com/"+name);
+          //check twitter api
+          mySharedService.checkApp("twitter").then(function(){
+            window.open("twitter://user?screen_name="+name, "_system", "location=no")
+          }, function(err){
+            if(err=="twitter is not avaiable"){
+              window.open("https://twitter.com/"+name, "_system", "location=no")
+            }
+          });
         break;
         case "email":
 
@@ -831,6 +982,9 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     }, function(err){
       mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
     })
+  }else{
+    //switch to tweetlist page
+    $state.go("tab.tweet");
   }
 
 

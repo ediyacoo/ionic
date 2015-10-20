@@ -65,11 +65,11 @@ angular.module('service-oauth', ['ngCordova', 'ngStorage', 'ngResource', 'ngTwit
       return $localStorage.oauth && $localStorage.oauth !== null && $localStorage.oauth.twitter !== null;
     },
 
-    retweet: function(t){
+    retweet: function(tweet){
       var deferred=$q.defer();
 
-      if(t&&t.id_str){
-        var url="https://api.twitter.com/1.1/statuses/retweet/"+t.id_str+".json";
+      if(tweet){
+        var url="https://api.twitter.com/1.1/statuses/retweet/"+tweet.id_str+".json";
 
         //$resource
         createTwitterSignature("POST", url);
