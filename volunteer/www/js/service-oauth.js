@@ -44,19 +44,30 @@ angular.module('service-oauth', ['ngCordova', 'ngStorage', 'ngResource', 'ngTwit
 
   return {
     initialize: function() {
-      var deferred = $q.defer();
-      var token = getStoredToken();
+      var deferred = $q.defer(),
+          token = getStoredToken(),
+          that=this,
+          temp_result=null;
 
       if (token&&token.twitter) {
           deferred.resolve(token.twitter);
       } else {
           //twitter login
-          $cordovaOauth.twitter(clientId, clientSecret).then(function(result) {
-              storeUserToken({twitter:result});
-              deferred.resolve(result);
-          }, function(error) {
-              deferred.reject(error);
+          $cordovaOauth.twitter(clientId, clientSecret, {redirect_uri:"http://vision.sdsu.edu/hdma/volunteer/callback"}).then(function(result) {
+              temp_result=result;
+              storeUserToken({twitter:temp_result});
+
+              //retrieve user profile
+              return that.getUserProfile(result.screen_name)
+          }).then(function(userProfile){
+              temp_result.userProfile=userProfile;
+              storeUserToken({twitter:temp_result});
+
+              deferred.resolve(temp_result);
+          }).catch(function(err){
+            deferred.reject(err);
           });
+
       }
       return deferred.promise;
     },

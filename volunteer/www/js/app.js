@@ -64,8 +64,8 @@ angular.module('starter', ['ionic','ionic.service.core','ngCordova','ionic.servi
       url: '/account',
       views: {
         'tab-account': {
-          templateUrl: 'templates/socialMediaSetting.html',
-          controller: 'SettingCtrl'
+          templateUrl: 'templates/account.html',
+          controller: 'AccountCtrl'
         }
       }
     })
@@ -79,6 +79,7 @@ angular.module('starter', ['ionic','ionic.service.core','ngCordova','ionic.servi
       }
     }
   })
+
 
   .state('callback', {
     url: '/callback',

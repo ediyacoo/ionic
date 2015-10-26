@@ -9,7 +9,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
   //console.log("clear localStorage")
   //***************************************************************
 
-  return {
+return {
     //oauth login
     oauth_login: function(type){
         //type
@@ -17,7 +17,8 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
         var isMobile=this.mobileAndTabletcheck(),
             defer=$q.defer(),
-            that=this;
+            that=this,
+            temp_result=null;
 
         //mobile version
         if(isMobile){
@@ -26,10 +27,34 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
               //twitter auth
               TwitterService.initialize().then(function(result){
                 if(result){
+                  temp_result=result;
+                  //check if the volunteer
+                  return that.checkVolunteer(result.screen_name)
+                }
+              }).then(function(output){
+                defer.resolve(temp_result)
+
+                //save userProfile
+                var userProfile=temp_result.userProfile;
+                that.userProfile=userProfile;
+
+                //save user actitvites
+                return $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"userProfile", userProfile:userProfile}, {headers:{"Authorization":null, "Content-Type":"application/json"}})
+              }).then(function(success){
+                if(success.data&&success.data.status!='success'){
+                  defer.reject({code:"userActivity-error", error:success.data})
+                }
+              }).catch(function(err){
+                defer.reject({code:"getUserProfile-error", error:err})
+              });
+
+              /**
+              //twitter auth
+              TwitterService.initialize().then(function(result){
+                if(result){
                   //check if the volunteer
                   that.checkVolunteer(result.screen_name).then(function(output){
                     defer.resolve(result)
-
 
                     //get user profile and save back to db
                     TwitterService.getUserProfile(result.screen_name).then(function(userProfile){
@@ -55,9 +80,9 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
               }, function(err){
                 defer.reject({code:"twitterOauthLogin-login-failure", error:err});
               });
+              **/
+
             } //end if twitter
-
-
           });
 
 
@@ -89,6 +114,14 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     },
 
 
+    //logout
+    logout: function(){
+      this.userProfile=null;
+      this.volunteers=null;
+      $localStorage.oauth["twitter"]=null;
+    },
+
+
     //check mobile
     mobileAndTabletcheck: function() {
       var check = false;
@@ -104,6 +137,11 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
     //momeont
     moment: moment,
+
+    //userProfile
+    userProfile:(function(){
+      return ($localStorage.oauth && $localStorage.oauth["twitter"])?$localStorage.oauth["twitter"].userProfile:null
+    })(),
 
     //get tweet
     getOESTweet: function(){
@@ -134,7 +172,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
             })
 
             if(result.today.length==0){
-              result.today=[{text:"no OES tweet on " +m_today.format(dateFormat) , user:{screen_name:"ReadySanDiego"}}];
+              result.today=[{text:"no SD emergency tweets on " +m_today.format(dateFormat) , user:{screen_name:"ReadySanDiego"}}];
             }
 
             $defer.resolve(result);
@@ -215,6 +253,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
             volunteers.sort(function(a,b){return a.twitteraccount > b.twitteraccount})
 
             that.volunteers=volunteers || [];
+            that.interestedArea=result.data.interestedArea || "";
           }else{
             defer.reject({code:"CheckVolunteer-not-signup", error:result})
           }
@@ -426,6 +465,9 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     //device_user
     device_user:null,
 
+    //interested area
+    interestedArea:"",
+
     //error code and description
     error:{
       "$http-error":"$http error",
@@ -441,6 +483,8 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
 
   };
+
+
 })
 
 
@@ -757,8 +801,6 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
     var oauth_twitter=mySharedService.getOauth("twitter");
     if(oauth_twitter && oauth_twitter.screen_name){
       mySharedService.checkVolunteer(oauth_twitter.screen_name).then(function(result){
-        $scope.volunteers=result.volunteers;
-        $scope.interestedArea=result.interestedArea;
 
         switch(type){
           case "normal":
@@ -846,13 +888,13 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
   }
 
   //interested area
-  $scope.interestedArea="";
+  $scope.interestedArea=mySharedService.interestedArea || "";
 
 
   //login
   $scope.login=function(){
     mySharedService.oauth_login("twitter").then(function(result){
-      //need to get volunteers obj to show in the view
+      //update mySharedService.interestedArea and mysharedServer.volunteers
       $scope.volunteers=mySharedService.volunteers;
 
       $scope.modal.hide();
@@ -910,6 +952,7 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
 
 
 //setting controller
+/**
 .controller("SettingCtrl", function($scope, $localStorage, $http, mySharedService){
   $scope.socialmedia={
     twitter:false,
@@ -940,10 +983,69 @@ angular.module('starter.controllers', ['ngCordova', 'ngStorage', 'ngResource', '
       }
     }
   }
+})
+*/
+
+
+//account control
+.controller("AccountCtrl", function($scope, $localStorage, $ionicModal, TwitterService, mySharedService){
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/login.html', {scope: $scope}).then(function(modal) {
+    $scope.modal = modal;
+  });
+
+  //to check if an user already login
+  $scope.isLogin=false;
+
+  $scope.userProfile=null;
+
+  //check when user enter to this view
+  $scope.$on('$ionicView.enter', function(e) {
+    //check if the user already loing with twitter account first
+    if(TwitterService.isAuthenticated()){
+      $scope.isLogin=true;
+      $scope.userProfile=mySharedService.userProfile;
+    }else{
+      $scope.isLogin=false;
+    }
+  });
+
+  //login
+  $scope.login=function(){
+    mySharedService.oauth_login("twitter").then(function(result){
+      $scope.isLogin=true;
+      $scope.userProfile=mySharedService.userProfile;
+    }, function(err){
+      var buttons=null
+      if(err.code=="CheckVolunteer-not-signup"){
+        buttons=[{
+          text:"Please Sign up first",
+          type:"button-positive",
+          onTap: function(e){
+            window.open("http://vision.sdsu.edu/ibss/signup.html");
+          }
+        }]
+      }
+
+      mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code], buttons:buttons}, err.error);
+    });
+  }
+
+
+  //logout
+  $scope.logout=function(){
+    //confirm
+    mySharedService.showPopup("show", {title:"Are you sure?", template:"", buttons:[
+      {text:"Cancel"},
+      {text:"Logout", type:"button-positive", onTap: function(e){
+        mySharedService.logout();
+        $scope.isLogin=false;
+      }}
+    ]});
+  }
 
 
 })
-
 
 
 //callback controller

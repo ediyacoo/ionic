@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.ionicframework.volunteer789118" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.ionicframework.volunteer789118" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>SD Emergency RT</name>
   <description>
-        An Ionic Framework and Cordova project.
+        We need your help to disseminate emergency information to our local community during disaster events.
     </description>
-  <author email="hi@ionicframework" href="http://ionicframework.com/">
-      Ionic Framework Team
+  <author email="chinte.jung@gmail.com" href="">
+      Calvin Jung
     </author>
   <content src="index.html"/>
   <access origin="*"/>

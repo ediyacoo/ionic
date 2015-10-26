@@ -528,7 +528,6 @@ angular.module("oauth.providers", ["oauth.utils"])
              * @return   promise
              */
             twitter: function(clientId, clientSecret, options) {
-              console.log("start to sign in twitter-0")
                 var deferred = $q.defer();
                 if(window.cordova) {
                     var cordovaMetadata = cordova.require("cordova/plugin_list").metadata;
@@ -539,10 +538,8 @@ angular.module("oauth.providers", ["oauth.utils"])
                                 redirect_uri = options.redirect_uri;
                             }
                         }
-console.log("start to sign in twitter-1")
-                        if(typeof jsSHA !== "undefined") {
-                          console.log("start to sign in twitter-2")
 
+                        if(typeof jsSHA !== "undefined") {
                             var oauthObject = {
                                 oauth_consumer_key: clientId,
                                 oauth_nonce: $cordovaOauthUtility.createNonce(32),
@@ -562,7 +559,6 @@ console.log("start to sign in twitter-1")
                                 },
                                 data: "oauth_callback=" + encodeURIComponent(redirect_uri)
                             }).then(function(requestTokenResult) {
-                                  console.log("start to sign in twitter-3")
                                     var requestTokenParameters = (requestTokenResult).split("&");
                                     var parameterMap = {};
                                     for(var i = 0; i < requestTokenParameters.length; i++) {
@@ -621,10 +617,6 @@ console.log("start to sign in twitter-1")
                                         deferred.reject("The sign in flow was canceled");
                                     });
                                 }).catch(function(error) {
-                                  console.log("$http error!!..........")
-                                  console.log(JSON.stringify(error))
-
-
                                   deferred.reject(error);
                                 }); //end $http.then
                         } else {
