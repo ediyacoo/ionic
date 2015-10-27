@@ -20,18 +20,18 @@
       <div class="padding" style='margin-top:25px; '>
         <div class='list'>
           <a class='item item-avatar' href="#">
-            <img src="{{userProfile.profile_image_url_https}}" />
-            <h2>{{userProfile.name}} (@{{userProfile.screen_name}})</h2>
-            <p>{{userProfile.description}}</p>
+            <img src="{{user.userProfile.profile_image_url_https}}" />
+            <h2>{{user.userProfile.name}} (@{{user.userProfile.screen_name}})</h2>
+            <p>{{user.userProfile.description}}</p>
           </a>
         </div>
 
         <div class=''>
-          <span class='retweet'>14</span>
+          <span class='retweet'>{{user.retweets.length}}</span>
           &nbsp; SD Emergency Retweets
         </div>
 
-        <button class="button icon-left ion-ios-person button-calm" ng-click="logout()">Logout your Twitter Account</button>
+        <button style='margin-top:100px; ' class="button icon-left ion-ios-person button-calm" ng-click="logout()">Logout your Twitter Account</button>
 
       </div>
     </div>

@@ -2,14 +2,14 @@
   <ion-content class='volunteer'>
     <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshVolunteer()"></ion-refresher>
 
-    <h4 class='title'>Find a volunteer in your most interested area: <span>{{interestedArea}}</span></h4>
+    <h4 class='title'>Find a volunteer in your most interested area: <span>{{user.interestedArea}}</span></h4>
 
     <div class="list">
       <label class="item item-input">
         <i class="icon ion-search placeholder-icon"></i>
         <input type="text" placeholder="Filter" ng-model="searchFilter">
       </label>
-      <a class='item item-avatar animate-repeat' href="#" ng-repeat="v in volunteers | filter:searchFilter" ng-click='link("twitter", v)'>
+      <a class='item item-avatar animate-repeat' href="#" ng-repeat="v in user.volunteers | filter:searchFilter" ng-click='link("twitter", v)'>
         <img src='images/HDMA_Logo_Small_squre.png' />
         <h2>{{v.name}}</h2>
         <p>{{v.twitteraccount}}</p>

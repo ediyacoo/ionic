@@ -62,7 +62,7 @@ angular.module('service-oauth', ['ngCordova', 'ngStorage', 'ngResource', 'ngTwit
           }).then(function(userProfile){
               temp_result.userProfile=userProfile;
               storeUserToken({twitter:temp_result});
-
+              
               deferred.resolve(temp_result);
           }).catch(function(err){
             deferred.reject(err);

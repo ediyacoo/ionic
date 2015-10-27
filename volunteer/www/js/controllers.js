@@ -36,7 +36,7 @@ return {
 
                 //save userProfile
                 var userProfile=temp_result.userProfile;
-                that.userProfile=userProfile;
+                that.user.userProfile=userProfile;
 
                 //save user actitvites
                 return $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"userProfile", userProfile:userProfile}, {headers:{"Authorization":null, "Content-Type":"application/json"}})
@@ -116,8 +116,8 @@ return {
 
     //logout
     logout: function(){
-      this.userProfile=null;
-      this.volunteers=null;
+      //clear $localStorage and user variable
+      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:"", retweets:[]})
       $localStorage.oauth["twitter"]=null;
     },
 
@@ -137,11 +137,6 @@ return {
 
     //momeont
     moment: moment,
-
-    //userProfile
-    userProfile:(function(){
-      return ($localStorage.oauth && $localStorage.oauth["twitter"])?$localStorage.oauth["twitter"].userProfile:null
-    })(),
 
     //get tweet
     getOESTweet: function(){
@@ -193,14 +188,30 @@ return {
       value=value || null;
 
       $localStorage.oauth=$localStorage.oauth || {};
-      $localStorage.oauth[type]=value;
+      $localStorage.oauth[type]=$localStorage.oauth[type] || {};
+
+      var data=$localStorage.oauth[type], user=this.user;
+
+      for(var k in value){
+        data[k]=value[k];
+
+        //if(user[k]){
+        user[k]=value[k]
+        //}
+      }
     },
 
 
     //get stored oauth info
-    getOauth: function(type) {
+    getOauth: function(type, key) {
       type=type || "twitter"
-      return ($localStorage.oauth && $localStorage.oauth[type])?$localStorage.oauth[type]:null
+
+      var data=($localStorage.oauth && $localStorage.oauth[type])?$localStorage.oauth[type]:null;
+      if(key&&data){
+        return data[key];
+      }else{
+        return data
+      }
     },
 
     /**
@@ -233,27 +244,50 @@ return {
     },
     */
 
-    //volunteers array. The data will be retrieved from the findVoluntter function
-    volunteers:[],
+
+    user:{},
+
+    init:function(){
+      this.user={
+        //device_user
+        device:null,
+
+        //interested area
+        interestedArea:this.getOauth("twitter", "interestedArea") || "",
+
+        //volunteers array. The data will be retrieved from the findVoluntter function
+        volunteers:this.getOauth("twitter", "volunteers") || [],
+
+        //userProfile
+        userProfile:this.getOauth("twitter", "userProfile") || null,
+
+        //retweet
+        retweets:this.getOauth("twitter", "retweets") || []
+      };
+
+      return this;
+    },
 
 
     //check volunteers
     checkVolunteer: function(screen_name){
       var output=false,
           defer=$q.defer(),
-          that=this;
+          that=this,
+          User=this.user;
 
       if(screen_name && screen_name!=""){
         $http.get("http://vision.sdsu.edu/hdma/volunteer/checkVolunteer/"+screen_name).then(function(result){
           if(result&&result.data&&result.data.isValidate){
-            defer.resolve(result.data)
+            var data=result.data;
+
+            defer.resolve(data)
 
             //sort volunteer by twitter account
-            var volunteers=result.data.volunteers || [];
+            var volunteers=data.volunteers || [];
             volunteers.sort(function(a,b){return a.twitteraccount > b.twitteraccount})
 
-            that.volunteers=volunteers || [];
-            that.interestedArea=result.data.interestedArea || "";
+            that.storeOauth("twitter", {volunteers:volunteers, retweets:data.retweets || [], interestedArea:data.interestedArea || ""})
           }else{
             defer.reject({code:"CheckVolunteer-not-signup", error:result})
           }
@@ -435,10 +469,10 @@ return {
           },
           defer=$q.defer();
 
-      if(!this.device_user){defer.reject("have not got the device info. please wait a while and try again.")};
+      if(!this.user.device){defer.reject("have not got the device info. please wait a while and try again.")};
 
 
-      platform=this.device_user.platform || "android";
+      platform=this.user.device.platform || "android";
 
       if(app_name&&app_name!=""){
         var scheme=(schemes[app_name.toLowerCase()])?schemes[app_name.toLowerCase()][platform]:null;
@@ -462,11 +496,7 @@ return {
       return defer.promise;
     },
 
-    //device_user
-    device_user:null,
 
-    //interested area
-    interestedArea:"",
 
     //error code and description
     error:{
@@ -482,7 +512,7 @@ return {
     }
 
 
-  };
+  }.init();
 
 
 })
@@ -518,7 +548,7 @@ return {
         mySharedService.pushRegister()
 
         //store user into mySharedService
-        mySharedService.device_user=user;
+        mySharedService.user.device=user;
 
         console.log("finished identify ionic user")
         console.log(user)
@@ -801,6 +831,7 @@ return {
     var oauth_twitter=mySharedService.getOauth("twitter");
     if(oauth_twitter && oauth_twitter.screen_name){
       mySharedService.checkVolunteer(oauth_twitter.screen_name).then(function(result){
+        $scope.user=mySharedService.user;
 
         switch(type){
           case "normal":
@@ -823,10 +854,10 @@ return {
   $scope.$on('$ionicView.enter', function(e) {
     //check if the user already loing with twitter account first
     if(TwitterService.isAuthenticated()){
-      if(mySharedService.volunteers.length==0){
+      if(mySharedService.user.volunteers.length==0){
         findVolunteer();
       }else{
-        $scope.volunteers=mySharedService.volunteers;
+        $scope.user=mySharedService.user;
       }
     }else{
       //test only
@@ -888,14 +919,17 @@ return {
   }
 
   //interested area
-  $scope.interestedArea=mySharedService.interestedArea || "";
+  //$scope.interestedArea=mySharedService.user.interestedArea || "";
 
+  //user
+  $scope.user={};
 
   //login
   $scope.login=function(){
     mySharedService.oauth_login("twitter").then(function(result){
       //update mySharedService.interestedArea and mysharedServer.volunteers
-      $scope.volunteers=mySharedService.volunteers;
+      $scope.user=mySharedService.user;
+
 
       $scope.modal.hide();
     }, function(err){
@@ -997,14 +1031,13 @@ return {
   //to check if an user already login
   $scope.isLogin=false;
 
-  $scope.userProfile=null;
+  $scope.user=mySharedService.user;
 
   //check when user enter to this view
   $scope.$on('$ionicView.enter', function(e) {
     //check if the user already loing with twitter account first
     if(TwitterService.isAuthenticated()){
       $scope.isLogin=true;
-      $scope.userProfile=mySharedService.userProfile;
     }else{
       $scope.isLogin=false;
     }
@@ -1014,7 +1047,7 @@ return {
   $scope.login=function(){
     mySharedService.oauth_login("twitter").then(function(result){
       $scope.isLogin=true;
-      $scope.userProfile=mySharedService.userProfile;
+      $scope.user=mySharedService.user;
     }, function(err){
       var buttons=null
       if(err.code=="CheckVolunteer-not-signup"){
