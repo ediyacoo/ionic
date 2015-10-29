@@ -33,7 +33,15 @@
               <span class='tweet-screen_name'><a href='https://twitter.com/{{t.user.screen_name}}' target='_blank'>@{{t.user.screen_name}}</a></span>
               <span class='tweet-datetime'> {{moment(t.created_at).format("MM-DD-YYYY hh:mm:ss a")}}</span>
             </h2>
+
+            <!-- isRetweeted-->
+            <div class='tweet-isRetweeted' ng-show='t.isRetweeted'>
+              <span class='ion-social-twitter-outline'></span>
+              <span class='ion-ios-checkmark' title='retweeted'></span>
+              <!--<button class="button icon-left button-outline ion-ios-checkmark-outline button-calm">Retweeted</button>-->
+            </div>
           </div>
+
         </div>
 
         <!--content-->

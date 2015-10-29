@@ -37,7 +37,8 @@
 
 
     <div class="padding" style='margin-top:25px; '>
-        <button class="button icon-left ion-android-share-alt button-calm" ng-click="retweet(t)">Retweet</button>
+        <button class="button icon-left ion-android-share-alt button-calm" ng-click="retweet(t)" ng-show="!t.isRetweeted">Retweet</button>
+        <button class="button icon-left button-outline ion-ios-checkmark-outline button-calm"  ng-show="t.isRetweeted==true">You've retweeted!</button>
     </div>
 
   </ion-content>

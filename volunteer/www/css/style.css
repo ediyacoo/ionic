@@ -22,6 +22,9 @@
 
 .tweet-media img {border-radius:10px; width:100%; max-width:600px;  }
 
+.tweet-isRetweeted {position:absolute; right:20px; top:20px; }
+.tweet-isRetweeted span {font-size:2em; float:left; margin-left:5px;  }
+
 
 .home {width:100%; height:100%; position:relative; }
 .home .row .col {text-align:center; }
@@ -42,6 +45,12 @@
 .volunteer .title span {display:block; margin-top:15px; font-size:.85em; }
 .volunteer .buttons {text-align:right; position:absolute; top:15px; right:15px; }
 
+
+.list .item-avatar {padding-left:115px !important; }
+.list .item-avatar > img:first-child {max-width:80px !important; max-height:80px !important; }
+.list .item-avatar * {text-align:left; }
+
+.account .list .item-avatar > img:first-child {max-width:55px !important; max-height:55px !important; top:10px !important; }
 .account .retweet {font-weight:bold; }
 
 

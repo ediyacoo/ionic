@@ -117,7 +117,7 @@ return {
     //logout
     logout: function(){
       //clear $localStorage and user variable
-      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:"", retweets:[]})
+      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:"", retweets:{}})
       $localStorage.oauth["twitter"]=null;
     },
 
@@ -262,10 +262,23 @@ return {
         userProfile:this.getOauth("twitter", "userProfile") || null,
 
         //retweet
-        retweets:this.getOauth("twitter", "retweets") || []
+        retweets:this.getOauth("twitter", "retweets") || {}
       };
 
       return this;
+    },
+
+
+    //array to object
+    setRetweetObj:function(retweets){
+      var obj={};
+
+      retweets.forEach(function(t, i){
+        obj[t["tweet_id"]]=t;
+      })
+      obj["length"]=retweets.length;
+
+      return obj;
     },
 
 
@@ -287,7 +300,10 @@ return {
             var volunteers=data.volunteers || [];
             volunteers.sort(function(a,b){return a.twitteraccount > b.twitteraccount})
 
-            that.storeOauth("twitter", {volunteers:volunteers, retweets:data.retweets || [], interestedArea:data.interestedArea || ""})
+            //convert retweet array to obj
+            var retweets=that.setRetweetObj(data.retweets);
+
+            that.storeOauth("twitter", {volunteers:volunteers, retweets:retweets || {}, interestedArea:data.interestedArea || ""})
           }else{
             defer.reject({code:"CheckVolunteer-not-signup", error:result})
           }
@@ -571,6 +587,25 @@ return {
 
 //tweet list controller
 .controller("TweetListCtrl", function($scope, $localStorage, $q, $http,  $ionicModal, $ionicLoading, $ionicPopup, mySharedService, TwitterService,  $ionicPlatform, $stateParams){
+  //check retweet
+  function checkRetweet(lists){
+    var retweets=mySharedService.user.retweets;
+
+    if(retweets&&retweets.length>0&&lists){
+      lists=lists.map(function(l, i){
+        if(!l.isRetweeted&&!l.retweetTime){
+          if(retweets[l.id_str]){
+            l.isRetweeted=true;
+            l.retweetTime=retweets[l.id_str].datetime_utc;
+          }
+        }
+        return l
+      })
+    }
+    return lists
+  }
+
+
   $scope.moment=mySharedService.moment;
 
   //on pushNotificationReceived
@@ -609,7 +644,6 @@ return {
 
 
 
-
   //if there is no existed tweets, manully get tweets
   if(!mySharedService.tweets || mySharedService.tweets.length==0){
     //show loading icon
@@ -617,7 +651,7 @@ return {
 
     mySharedService.getOESTweet().then(function(json){
       $scope.oesTweet=json;
-      $scope.tweetList=json[$scope.selectedTab];
+      $scope.tweetList=checkRetweet(json[$scope.selectedTab]);
 
       //hide loading icon
       $ionicLoading.hide();
@@ -645,6 +679,15 @@ return {
   //selected tab
   $scope.selectedTab="top";
 
+  //watch mySharedService.user.retweets. if there is any chnage, update $scope.tweetList
+  $scope.$watch(function(){
+    return mySharedService.user.retweets
+  }, function(value){
+    if(value){
+      $scope.tweetList=checkRetweet($scope.oesTweet[$scope.selectedTab])
+    }
+  })
+
 
   //change tweetlist
   $scope.changeTweetList=function(type){
@@ -653,8 +696,7 @@ return {
     var output=$scope.oesTweet[type];
     if(output){
       //change tweetList Source;
-      $scope.tweetList=output;
-      console.log($scope.tweetList)
+      $scope.tweetList=checkRetweet(output);
     }
   }
 
@@ -668,7 +710,7 @@ return {
 
     mySharedService.getOESTweet().then(function(result){
       $scope.oesTweet=result
-      $scope.tweetList=result[$scope.selectedTab];
+      $scope.tweetList=checkRetweet(result[$scope.selectedTab]);
       $scope.$broadcast('scroll.refreshComplete');
 
       defer.resolve();
@@ -684,7 +726,6 @@ return {
 
   //click each tweet to open modal for share or login
   $scope.click=function(t){
-    console.log(t)
     $scope.t=t
 
 
@@ -761,7 +802,9 @@ return {
           if(success.data&&success.data.status!='success'){
             console.log({code:"userActivity-err", error:success.data})
           }else{
-            console.log("user actitvities succeed!!!!")
+            console.log("user's retweet saved successfully!")
+            //update user's retweets
+            mySharedService.storeOauth("twitter", {retweets: mySharedService.setRetweetObj(success.data.retweets)});
           }
         }, function(failure){
           console.log({code:"userActivity-error", error:failure})
