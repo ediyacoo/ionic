@@ -10,7 +10,7 @@
         <input type="text" placeholder="Filter" ng-model="searchFilter">
       </label>
       <a class='item item-avatar animate-repeat' href="#" ng-repeat="v in user.volunteers | filter:searchFilter" ng-click='link("twitter", v)'>
-        <img src='images/HDMA_Logo_Small_squre.png' />
+        <img src='{{v.twitterPhoto}}' />
         <h2>{{v.name}}</h2>
         <p>{{v.twitteraccount}}</p>
         <p>Age: {{v.age}}</p>

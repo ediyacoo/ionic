@@ -75,7 +75,7 @@ angular.module('starter', ['ionic','ionic.service.core','ngCordova','ionic.servi
     views: {
       'tab-about': {
         templateUrl: 'templates/about.html',
-        controller: 'HomeCtrl'
+        controller: 'AboutCtrl'
       }
     }
   })

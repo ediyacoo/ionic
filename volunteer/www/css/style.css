@@ -42,6 +42,7 @@
 .volunteer .title span {display:block; margin-top:15px; font-size:.85em; }
 .volunteer .buttons {text-align:right; position:absolute; top:15px; right:15px; }
 
+.account .retweet {font-weight:bold; }
 
 
 .login * {text-align:center; }

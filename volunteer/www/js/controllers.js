@@ -1130,3 +1130,18 @@ return {
     $state.go("tab.tweet");
   }
 })
+
+//home controller
+.controller('AboutCtrl', function($scope, $ionicLoading, $ionicPopup, $state, mySharedService, $rootScope){
+
+  //get link
+  $scope.linkTwitter=function(screen_name){
+    mySharedService.checkApp("twitter").then(function(){
+      window.open("twitter://user?screen_name="+screen_name, "_system", "location=no");
+    }, function(err){
+      if(err=="twitter is not avaiable"){
+        window.open("https://twitter.com/"+screen_name, "_system", "location=no");
+      }
+    })
+  }
+})
