@@ -893,6 +893,9 @@ return {
   }
 
 
+  //is login
+  $scope.isLogin=false;
+
   //check when user enter to this view
   $scope.$on('$ionicView.enter', function(e) {
     //check if the user already loing with twitter account first
@@ -902,10 +905,12 @@ return {
       }else{
         $scope.user=mySharedService.user;
       }
+      $scope.isLogin=true;
     }else{
       //test only
       if(mySharedService.mobileAndTabletcheck()){
-        $scope.modal.show();
+        //$scope.modal.show();
+        $scope.isLogin=false;
       }else{
         //test only
         $scope.volunteers=[
@@ -970,11 +975,12 @@ return {
   //login
   $scope.login=function(){
     mySharedService.oauth_login("twitter").then(function(result){
+      $scope.isLogin=true;
+
       //update mySharedService.interestedArea and mysharedServer.volunteers
       $scope.user=mySharedService.user;
 
-
-      $scope.modal.hide();
+      //$scope.modal.hide();
     }, function(err){
       var buttons=null
       if(err.code=="CheckVolunteer-not-signup"){
