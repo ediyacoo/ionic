@@ -117,7 +117,7 @@ return {
     //logout
     logout: function(){
       //clear $localStorage and user variable
-      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:"", retweets:{}})
+      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:"", retweets:{}, volunteerInfo:{}})
       $localStorage.oauth["twitter"]=null;
     },
 
@@ -262,7 +262,10 @@ return {
         userProfile:this.getOauth("twitter", "userProfile") || null,
 
         //retweet
-        retweets:this.getOauth("twitter", "retweets") || {}
+        retweets:this.getOauth("twitter", "retweets") || {},
+
+        //volunteer info
+        volunteerInfo:this.getOauth("twitter", "volunteerInfo") || {}
       };
 
       return this;
@@ -296,14 +299,10 @@ return {
 
             defer.resolve(data)
 
-            //sort volunteer by twitter account
-            var volunteers=data.volunteers || [];
-            volunteers.sort(function(a,b){return a.twitteraccount > b.twitteraccount})
-
             //convert retweet array to obj
             var retweets=that.setRetweetObj(data.retweets);
 
-            that.storeOauth("twitter", {volunteers:volunteers, retweets:retweets || {}, interestedArea:data.interestedArea || ""})
+            that.storeOauth("twitter", {volunteers:data.volunteers || {}, retweets:retweets || {}, interestedArea:data.interestedArea || "", volunteerInfo:data.volunteerInfo || {}})
           }else{
             defer.reject({code:"CheckVolunteer-not-signup", error:result})
           }
@@ -402,9 +401,6 @@ return {
           //chck notification event
           switch(notification.event){
               case 'message':
-
-
-
                   // if this flag is set, this notification happened while we were in the foreground.
                   // you might want to play a sound to get the user's attention, throw up a dialog, etc.
                   if(notification.foreground){
@@ -440,10 +436,17 @@ return {
               case 'error':
                   console.log('ERROR -&gt; MSG:' + notification.message + '');
               break;
+              case 'registered':
+                  console.log("registered")
+                  console.log("token="+notification.regid);
+              break;
               default:
-                  console.log('EVENT -&gt; Unknown, an event was received and we do not know what it is');
+                  console.log('EVENT -&gt; Unknown, an event was received and we do not know what it is............................................');
+                  console.log(notification)
               break;
           }
+
+
 
           return;
 
@@ -452,16 +455,18 @@ return {
       }).then(function(result){
         console.log("$ionic push: user registered")
         console.log(result);
+        console.log("--------------------------")
       });
 
+    },
 
 
-      //unregister //not finished
+    //unregister Push
+    pushUnregister:function(){
       $ionicPush.unregister().then(function(result){
         console.log("unregister!")
         console.log(result)
       })
-
     },
 
 
@@ -550,7 +555,7 @@ return {
         obj.platform=data.platform;
         obj.install=true;
 
-        console.log("Successfully registered token " + data.token);
+        console.log("Successfully registered token ");
         console.log(obj)
 
         mySharedService.postDeviceInfo(obj)
@@ -586,7 +591,7 @@ return {
 
 
 //tweet list controller
-.controller("TweetListCtrl", function($scope, $localStorage, $q, $http,  $ionicModal, $ionicLoading, $ionicPopup, mySharedService, TwitterService,  $ionicPlatform, $stateParams){
+.controller("TweetListCtrl", function($scope, $rootScope, $localStorage, $q, $http,  $ionicModal, $ionicLoading, $ionicPopup, mySharedService, TwitterService,  $ionicPlatform, $stateParams){
   //check retweet
   function checkRetweet(lists){
     var retweets=mySharedService.user.retweets;
@@ -805,6 +810,9 @@ return {
             console.log("user's retweet saved successfully!")
             //update user's retweets
             mySharedService.storeOauth("twitter", {retweets: mySharedService.setRetweetObj(success.data.retweets)});
+
+            //if get the message, broadcast first to get the tweet
+            $rootScope.$broadcast("retweeted", t)
           }
         }, function(failure){
           console.log({code:"userActivity-error", error:failure})
@@ -895,6 +903,17 @@ return {
 
   //is login
   $scope.isLogin=false;
+
+  //only show the interested area
+  $scope.isOnlyMostInterestedArea=true;
+
+  //switchVolunteer
+  $scope.switchVolunteer=function(){
+
+
+    //change the value
+    $scope.isOnlyMostInterestedArea=!$scope.isOnlyMostInterestedArea;
+  }
 
   //check when user enter to this view
   $scope.$on('$ionicView.enter', function(e) {
@@ -1082,6 +1101,46 @@ return {
 
   $scope.user=mySharedService.user;
 
+  //init drawChart
+  drawChart();
+
+
+  //draw bar chart
+  function drawChart(){
+    //chart
+    if(mySharedService.user&&mySharedService.user.retweets){
+      var retweets=mySharedService.user.retweets,
+          obj={}, month=null,
+          labels=[], values=[];
+
+      for(var z in retweets){
+        if(z!="length"){
+          month=moment(retweets[z].datetime_utc).format("MMM (YYYY)");
+          if(!obj[month]){obj[month]=0}
+          obj[month]++;
+        }
+      }
+
+      for(var k in obj){
+        labels.push(k);
+        values.push(obj[k]);
+      }
+      $scope.labels=labels;
+      $scope.series = ['Retweet'];
+      $scope.data=[values];
+    }
+  }
+
+
+
+  //listen retweeted
+  $scope.$on("retweeted", function(e){
+    console.log("got retweeted broadcast", e)
+    drawChart();
+  })
+
+
+
   //check when user enter to this view
   $scope.$on('$ionicView.enter', function(e) {
     //check if the user already loing with twitter account first
@@ -1097,6 +1156,7 @@ return {
     mySharedService.oauth_login("twitter").then(function(result){
       $scope.isLogin=true;
       $scope.user=mySharedService.user;
+      drawChart();
     }, function(err){
       var buttons=null
       if(err.code=="CheckVolunteer-not-signup"){

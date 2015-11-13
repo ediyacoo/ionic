@@ -27,11 +27,18 @@
             <img src="{{user.userProfile.profile_image_url_https}}" />
             <h2>{{user.userProfile.name}} (@{{user.userProfile.screen_name}})</h2>
             <p>{{user.userProfile.description}}</p>
+            <p>Age: {{user.volunteerInfo.age}}</p>
+            <p>Language: {{user.volunteerInfo.areyouproficientinanyotherlanguages}}</p>
+            <p>Volunteer since: {{user.volunteerInfo.timestamp}}</p>
           </a>
         </div>
 
-        <div class=''>
-          You have retweet <span class='retweet'>{{user.retweets.length}}</span> San Diego Emergency messages
+        <p></p>
+        <h4>You already retweeted <span class='retweet'>{{user.retweets.length}}</span> San Diego Emergency messages</h4>
+
+        <!--chart-->
+        <div class="item item-text-wrap">
+            <canvas id="bar" class="chart chart-bar" data="data" labels="labels" legend="true" series="series" options="{showTooltips: true, responsive:true, animation:false}"></canvas>
         </div>
 
         <button style='margin-top:100px; ' class="button icon-left ion-ios-person button-calm" ng-click="logout()">Logout your Twitter Account</button>

@@ -42,10 +42,11 @@
 .about .logo .col {text-align:center; }
 
 
-.volunteer .title {text-align:center; padding:20px;   }
+.volunteer .title {text-align:center; padding:20px; margin-bottom:20px;   }
 .volunteer .title span {display:block; margin-top:15px; font-size:.85em; }
 .volunteer .buttons {text-align:right; position:absolute; top:15px; right:15px; }
 .volunteer .content {text-align:center; }
+.volunteer .yourMostInterestedArea {background-color:#ff0000; color:#ffffff; }
 
 .list .item-avatar {padding-left:115px !important; }
 .list .item-avatar > img:first-child {max-width:80px !important; max-height:80px !important; }
