@@ -1,0 +1,49 @@
+<ion-view view-title="San Diego County Emergency Feeds">
+  <!--
+  <ion-nav-buttons side="right" ng-show="false" ng-click="$state.go('home')">
+    <button class="button button-icon button-clear ion-home"></button>
+  </ion-nav-buttons>
+-->
+
+  <ion-content>
+
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshEmergencyFeed()"></ion-refresher>
+
+    <!-- content-->
+    <div class='list feedList'>
+      <!-- if there is no tweets-->
+      <div class="no-feed" ng-if='feed.items.length==0'>
+          <p>We cannot get any emergency feed.<br>Please slide down to refresh.</p>
+      </div>
+
+
+      <div class="card" ng-repeat="item in feed.items" ng-click="click(item)" ng-if='feed.items.length>0'>
+        <div class='item item-avatar'>
+          <img src='images/1447479016_RSS.png'></img>
+          <h2>{{item.title}}</h2>
+          <p>{{item.pubDate}}</p>
+
+          <div class='buttons'>
+            <a class='button button-positive button-outline' href="{{item.aslLink}}" target='_blank'>
+              <!--<i class='icon ion-android-hand'></i>-->
+              ASL
+            </a>
+            <a class='button button-positive button-outline' href="{{item.shortLink}}"  target='_blank'>
+              <!--<i class='icon '></i>-->
+              Link
+            </a>
+          </div>
+
+        </div>
+
+        <div class='item item-body' ng-bind-html="item.description"></div>
+
+
+
+
+
+      </div>
+
+
+  </ion-content>
+</ion-view>

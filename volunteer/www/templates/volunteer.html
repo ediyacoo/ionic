@@ -1,28 +1,24 @@
-<ion-view view-title="Find Volunteers">
+<ion-view view-title="Volunteers">
   <ion-content class='volunteer'>
     <div class='content' ng-show="isLogin==true">
       <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshVolunteer()"></ion-refresher>
 
-      <h4 class='title'>Your most interested area is:<br><span>{{user.interestedArea}}</span></h4>
+      <!--<p>You can find a volunteer by searching their Twitter account and click on each volunteer to see their Twitter page.</p>-->
+      <!--<h4 class='title'>Your most interested area is:<br><span>{{user.interestedArea}}</span></h4>-->
 
       <div class="list">
         <label class="item item-input">
           <i class="icon ion-search placeholder-icon"></i>
           <input type="text" placeholder="Filter" ng-model="searchFilter">
         </label>
-        <div class='item item-divider' ng-repeat-start="(area, volunteers) in user.volunteers" ng-class="{'yourMostInterestedArea' : area==user.interestedArea}">
+        <!--<div class='item item-divider' ng-repeat-start="(area, volunteers) in user.volunteers" ng-class="{'yourMostInterestedArea' : area==user.interestedArea}">
           {{area}}
-        </div>
-        <a class='item item-avatar animate-repeat' href="#" ng-repeat="v in volunteers | filter:searchFilter" ng-click='link("twitter", v)'>
+        </div>-->
+        <a class='item item-avatar animate-repeat' href="#" ng-repeat="v in user.volunteers | filter:searchFilter" ng-click='link("twitter", v)'>
           <img src='{{v.twitterPhoto}}' />
-          <h2>{{v.name}}</h2>
-          <p>{{v.twitteraccount}}</p>
-          <p>Age: {{v.age}}</p>
-          <p>Language: {{v.areyouproficientinanyotherlanguages}}</p>
-          <!--<p>Most interested area: {{v.mostimportantareatoyou}}</p>
-          <p>Second interested area: {{v.secondarea_3}}</p>
-          <p>Third interested area: {{v.thirdarea_3}}</p>-->
-
+          <h2>@{{v.twitteraccount}}</h2>
+          <p ng-show="v.areyouproficientinanyotherlanguages&&v.areyouproficientinanyotherlanguages!=''">Additional Language: {{v.areyouproficientinanyotherlanguages}}</p>
+          <div class="retweetNum" ng-show="v.retweets&&v.retweets.length!=0">{{v.retweets}} <i class="fa fa-retweet"></i></div>
           <!--
           <div class='buttons'>
             <button class='button icon ion-social-twitter' ng-click='link("twitter", v)'></button>
@@ -30,7 +26,7 @@
           </div>
         -->
         </a>
-        <div ng-repeat-end></div></div>
+        <!--<div ng-repeat-end></div>-->
       </div>
     </div>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id_new="edu.sdsu.humandynamics.sd-rt-emergency" id="com.ionicframework.volunteer789118" version="0.0.13" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id_new="edu.sdsu.humandynamics.sd-rt-emergency" id="com.ionicframework.volunteer789118" version="0.0.14" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>SD-RT Emergency</name>
   <description>
         We need your help to disseminate emergency information to our local community during disaster events.

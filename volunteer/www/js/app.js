@@ -53,6 +53,16 @@ angular.module('starter', ['ionic','ionic.service.core','ngCordova','ionic.servi
       }
   })
 
+  .state('tab.feed', {
+      url: '/feed',
+      views: {
+        'tab-feed': {
+          templateUrl: 'templates/feed.html',
+          controller: 'FeedCtrl'
+        }
+      }
+  })
+
   .state('tab.volunteer', {
       url: '/volunteer',
       views: {

@@ -135,6 +135,9 @@ return {
     //tweets
     tweets:[],
 
+    //emgercyfeeds
+    emergencyFeed:null,
+
     //momeont
     moment: moment,
 
@@ -146,7 +149,7 @@ return {
       $http.jsonp("http://vision.sdsu.edu/hdma/volunteer/tweets?callback=JSON_CALLBACK")
         .success(function(json){
           if(json&&json.length>0){
-            var result={top:[], today:[], historical:[], all:json},
+            var result={top5:[], hour3:[], today:[], historical:[], all:json},
                 m_timestamp, m_today=moment(), dateFormat="MM-DD-YYYY";
 
             //parse by date
@@ -155,7 +158,12 @@ return {
 
               //most recent 5 tweets
               if(i<5){
-                result.top.push(t)
+                result.top5.push(t)
+              }
+
+              //within 3 hours
+              if(m_today.unix() - m_timestamp.unix() <= 3*60*60){
+                result.hour3.push(t);
               }
 
               //today and historical tweets
@@ -165,10 +173,6 @@ return {
                 result.historical.push(t)
               }
             })
-
-            if(result.today.length==0){
-              result.today=[{text:"no SD emergency tweets on " +m_today.format(dateFormat) , user:{screen_name:"ReadySanDiego"}}];
-            }
 
             $defer.resolve(result);
           }else{
@@ -181,6 +185,22 @@ return {
       return $defer.promise;
     },
 
+
+    //get san diego emergency feed
+    getEmergencyFeed:function(){
+      var defer=$q.defer(),
+          that=this;
+
+      $http.jsonp("http://vision.sdsu.edu/hdma/volunteer/emergencyFeed?callback=JSON_CALLBACK").success(function(result){
+        that.emergencyFeed=result;
+
+        defer.resolve(result)
+      }).catch(function(e){
+        defer.reject(e);
+      });
+
+      return defer.promise;
+    },
 
     //store oauth
     storeOauth: function(type, value) {
@@ -682,7 +702,7 @@ return {
   $scope.oesTweet={}
 
   //selected tab
-  $scope.selectedTab="top";
+  $scope.selectedTab="hour3";
 
   //watch mySharedService.user.retweets. if there is any chnage, update $scope.tweetList
   $scope.$watch(function(){
@@ -909,8 +929,6 @@ return {
 
   //switchVolunteer
   $scope.switchVolunteer=function(){
-
-
     //change the value
     $scope.isOnlyMostInterestedArea=!$scope.isOnlyMostInterestedArea;
   }
@@ -984,6 +1002,12 @@ return {
   $scope.refreshVolunteer=function(){
     findVolunteer('refresh');
   }
+
+
+  //retweet event
+  $scope.$on("retweeted", function(e){
+    findVolunteer('refresh');
+  })
 
   //interested area
   //$scope.interestedArea=mySharedService.user.interestedArea || "";
@@ -1135,7 +1159,6 @@ return {
 
   //listen retweeted
   $scope.$on("retweeted", function(e){
-    console.log("got retweeted broadcast", e)
     drawChart();
   })
 
@@ -1253,4 +1276,35 @@ return {
       }
     })
   }
+})
+
+
+//feed controller
+.controller('FeedCtrl', function($scope, $ionicLoading, $ionicPopup, mySharedService, $rootScope){
+
+  //check when user enter to this view
+  $scope.$on('$ionicView.enter', function(e) {
+    if(!mySharedService.emergencyFeed){
+      $ionicLoading.show();
+      mySharedService.getEmergencyFeed().then(function(result){
+        $scope.feed=result;
+
+        $ionicLoading.hide();
+      })
+    }else{
+      $scope.feed=mySharedService.emergencyFeed;
+    }
+  });
+
+  $scope.feed=mySharedService.emergencyFeed;
+
+  //get san diego emergency feed
+  $scope.refreshEmergencyFeed=function(){
+    mySharedService.getEmergencyFeed().then(function(result){
+      $scope.feed=result;
+      $scope.$broadcast('scroll.refreshComplete')
+    })
+  }
+
+
 })

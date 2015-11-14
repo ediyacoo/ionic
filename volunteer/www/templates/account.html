@@ -25,10 +25,9 @@
         <div class='list'>
           <a class='item item-avatar' href="#">
             <img src="{{user.userProfile.profile_image_url_https}}" />
-            <h2>{{user.userProfile.name}} (@{{user.userProfile.screen_name}})</h2>
+            <h2>@{{user.userProfile.screen_name}}</h2>
             <p>{{user.userProfile.description}}</p>
-            <p>Age: {{user.volunteerInfo.age}}</p>
-            <p>Language: {{user.volunteerInfo.areyouproficientinanyotherlanguages}}</p>
+            <p>Additional Language: {{user.volunteerInfo.areyouproficientinanyotherlanguages}}</p>
             <p>Volunteer since: {{user.volunteerInfo.timestamp}}</p>
           </a>
         </div>

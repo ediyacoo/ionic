@@ -1,4 +1,4 @@
-<ion-view view-title="SD Emergency Tweets">
+<ion-view view-title="SD Emergency Tweets from @ReadySanDiego">
   <!--
   <ion-nav-buttons side="right" ng-show="false" ng-click="$state.go('home')">
     <button class="button button-icon button-clear ion-home"></button>
@@ -7,8 +7,9 @@
 <ion-header-bar class="bar-subheader tweet-subheader" >
   <!-- tabs-top -->
   <div class="tweet-tabs tabs ">
-    <a class="tab-item active" ng-class="{'active':selectedTab=='top'}" ng-click="changeTweetList('top')">Most Recent</a>
+    <a class="tab-item active" ng-class="{'active':selectedTab=='hour3'}" ng-click="changeTweetList('hour3')">Within 3 hours</a>
     <a class="tab-item" ng-class="{'active':selectedTab=='today'}" ng-click="changeTweetList('today')">Today</a>
+    <a class="tab-item" ng-class="{'active':selectedTab=='top5'}" ng-click="changeTweetList('top5')">Recent 5 tweets</a>
     <a class="tab-item" ng-class="{'active':selectedTab=='historical'}" ng-click="changeTweetList('historical')">Historical</a>
   </div>
 </ion-header-bar>
@@ -20,7 +21,14 @@
 
     <!-- content-->
     <div class='tweet-listCard'>
-      <div class="list card" ng-repeat="t in tweetList" ng-click="click(t)" ng-if='t.user.screen_name=="ReadySanDiego"'>
+      <!-- if there is no tweets-->
+      <div class="no-tweet" ng-if='tweetList.length==0'>
+          <div class='icon ion-android-sunny'></div>
+          <p>There is no emegency tweets in the category.<br>Please click on other categories or slide down to refresh tweets.</p>
+      </div>
+
+
+      <div class="list card" ng-repeat="t in tweetList" ng-click="click(t)" ng-if='t.user.screen_name=="ReadySanDiego" && tweetList.length>0'>
         <div class='row row-top' >
           <!--avatar-->
           <div class='col-20 tweet-avatar' ng-if="t.user.profile_image_url_https">
@@ -36,8 +44,7 @@
 
             <!-- isRetweeted-->
             <div class='tweet-isRetweeted' ng-show='t.isRetweeted'>
-              <span class='ion-social-twitter-outline'></span>
-              <span class='ion-ios-checkmark' title='retweeted'></span>
+              <i class="fa fa-retweet"></i>
               <!--<button class="button icon-left button-outline ion-ios-checkmark-outline button-calm">Retweeted</button>-->
             </div>
           </div>
