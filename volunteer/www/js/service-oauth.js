@@ -89,28 +89,28 @@ angular.module('service-oauth', ['ngCordova', 'ngStorage', 'ngResource', 'ngTwit
           var permaLink="https://twitter.com/"+tweet.user.screen_name +"/status/"+tweet.id_str;
 
           params={
-            status:comment //+ " " + permaLink
+            status:comment + " " + permaLink
           }
         }
 
         //$resource
         createTwitterSignature("POST", url, params);
 
-        /**
+        //compose data string
         if(params){
           var temp=[];
           for(var k in params){
-            temp.push(k+"="+params[k])
+            temp.push(k+"="+encodeURIComponent(params[k]))
           }
           data_string=temp.join("&")
         }
-        console.log(data_string)
-        */
+
+
 
         $http({
           method:"POST",
           url:url,
-          data:params
+          data:data_string
         }).then(function(result){
         //$resource(url).save(null, params, function(result){
           deferred.resolve(result);
