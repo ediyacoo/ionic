@@ -704,6 +704,7 @@ return {
   //selected tab
   $scope.selectedTab="hour3";
 
+
   //watch mySharedService.user.retweets. if there is any chnage, update $scope.tweetList
   $scope.$watch(function(){
     return mySharedService.user.retweets
@@ -812,14 +813,15 @@ return {
 
 
   //retweet
-  $scope.retweet=function(){
+  $scope.retweet=function(t, comment){
     var t=$scope.t,
+        comment=comment || "",
         oauth=mySharedService.getOauth("twitter");
 
     if(t&&oauth&&oauth.user_id){
       //retweet
       //client side seems not working. There will be CORS (cross-domain issues)
-      TwitterService.retweet(t).then(function(result){
+      TwitterService.retweet(t, comment).then(function(result){
         console.log(result)
 
         //save user actitvites

@@ -62,7 +62,7 @@ angular.module('service-oauth', ['ngCordova', 'ngStorage', 'ngResource', 'ngTwit
           }).then(function(userProfile){
               temp_result.userProfile=userProfile;
               storeUserToken({twitter:temp_result});
-              
+
               deferred.resolve(temp_result);
           }).catch(function(err){
             deferred.reject(err);
@@ -76,16 +76,43 @@ angular.module('service-oauth', ['ngCordova', 'ngStorage', 'ngResource', 'ngTwit
       return $localStorage.oauth && $localStorage.oauth !== null && $localStorage.oauth.twitter !== null;
     },
 
-    retweet: function(tweet){
+    retweet: function(tweet, comment){
       var deferred=$q.defer();
 
       if(tweet){
-        var url="https://api.twitter.com/1.1/statuses/retweet/"+tweet.id_str+".json";
+        var url="https://api.twitter.com/1.1/statuses/retweet/"+tweet.id_str+".json",
+            params=null, data_string=null;
+
+        //if there is any comment, use "quot-tweet" to retweet
+        if(comment&&comment!=""){
+          url="https://api.twitter.com/1.1/statuses/update.json";
+          var permaLink="https://twitter.com/"+tweet.user.screen_name +"/status/"+tweet.id_str;
+
+          params={
+            status:comment //+ " " + permaLink
+          }
+        }
 
         //$resource
-        createTwitterSignature("POST", url);
+        createTwitterSignature("POST", url, params);
 
-        $resource(url).save(null, null, function(result){
+        /**
+        if(params){
+          var temp=[];
+          for(var k in params){
+            temp.push(k+"="+params[k])
+          }
+          data_string=temp.join("&")
+        }
+        console.log(data_string)
+        */
+
+        $http({
+          method:"POST",
+          url:url,
+          data:params
+        }).then(function(result){
+        //$resource(url).save(null, params, function(result){
           deferred.resolve(result);
         }, function(err){
           deferred.reject(err);
