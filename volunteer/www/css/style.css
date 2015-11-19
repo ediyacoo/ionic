@@ -54,16 +54,17 @@
 .volunteer .retweetNum i {font-size:1.3em; }
 
 
-.volunteer .list .item-avatar {padding-left:115px !important; height:100px !important;  }
-.volunteer .list .item-avatar > img:first-child {max-width:70px !important; max-height:70px !important; }
-.volunteer .list .item-avatar * {text-align:left; }
+.list .item-avatar {padding-left:115px !important; height:100px !important;  }
+.list .item-avatar > img:first-child {max-width:70px !important; max-height:70px !important; }
+.list .item-avatar * {text-align:left; }
 
 .feedList .buttons {position:absolute; top:10px; right:10px;}
 .feedList .buttons .button {margin-left:15px !important;}
-
+.feedList .tab-item span {font-size:1.5em; }
 
 .account .list .item-avatar > img:first-child {max-width:55px !important; max-height:55px !important; top:10px !important; }
 .account .retweet {font-weight:bold; }
+
 
 
 .login * {text-align:center; }

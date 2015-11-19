@@ -23,21 +23,34 @@
           <h2>{{item.title}}</h2>
           <p>{{item.pubDate}}</p>
 
+          <!--
           <div class='buttons'>
             <a class='button button-positive button-outline' href="{{item.aslLink}}" target='_blank'>
-              <!--<i class='icon ion-android-hand'></i>-->
-              ASL
+              <i class='icon ion-android-hand'></i>
+               ASL
             </a>
             <a class='button button-positive button-outline' href="{{item.shortLink}}"  target='_blank'>
-              <!--<i class='icon '></i>-->
+              <i class='icon '></i>
               Link
             </a>
           </div>
-
+        -->
         </div>
 
         <div class='item item-body' ng-bind-html="item.description"></div>
 
+        <div class='item tabs tabs-secondary tabs-icon-left'>
+          <!--
+          <a class='tab-item' href="{{item.aslLink}}" target='_blank'>
+            <i class='icon ion-ios-film'></i>
+            <span>ASL</span>
+          </a>
+          -->
+          <a class='tab-item' href="{{item.shortLink}}" target='_blank'>
+            <i class='icon ion-ios-world'></i>
+            <span>Link</span>
+          </a>
+        </div>
 
 
 

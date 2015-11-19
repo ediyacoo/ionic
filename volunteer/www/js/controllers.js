@@ -1116,7 +1116,7 @@ return {
 
 
 //account control
-.controller("AccountCtrl", function($scope, $localStorage, $ionicModal, TwitterService, mySharedService){
+.controller("AccountCtrl", function($scope, $localStorage, $ionicModal, TwitterService, mySharedService, $timeout){
   // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/login.html', {scope: $scope}).then(function(modal) {
     $scope.modal = modal;
@@ -1151,6 +1151,7 @@ return {
         labels.push(k);
         values.push(obj[k]);
       }
+
       $scope.labels=labels;
       $scope.series = ['Retweet'];
       $scope.data=[values];
@@ -1181,7 +1182,11 @@ return {
     mySharedService.oauth_login("twitter").then(function(result){
       $scope.isLogin=true;
       $scope.user=mySharedService.user;
-      drawChart();
+
+      $timeout(function(){
+        drawChart();
+      },2000)
+
     }, function(err){
       var buttons=null
       if(err.code=="CheckVolunteer-not-signup"){
