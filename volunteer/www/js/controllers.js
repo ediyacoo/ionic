@@ -1305,6 +1305,11 @@ return {
 
   $scope.feed=mySharedService.emergencyFeed;
 
+  $scope.windowOpen=function(url){
+    window.open(url, "_system");
+    return false; 
+  }
+
   //get san diego emergency feed
   $scope.refreshEmergencyFeed=function(){
     mySharedService.getEmergencyFeed().then(function(result){
