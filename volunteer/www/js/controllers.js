@@ -425,7 +425,6 @@ return {
                   // you might want to play a sound to get the user's attention, throw up a dialog, etc.
                   if(notification.foreground){
                       //var res=confirm(notification.payload.message);
-                      $cordovaDialogs.confirm(notification.payload.message, "Volunteer APP", ["Retweet", "Cancle"]).then(function(buttonIndex){
                         switch(buttonIndex){
                           case 0:
                             //no button
@@ -1304,7 +1303,11 @@ return {
   });
 
   $scope.feed=mySharedService.emergencyFeed;
-
+            
+  $scope.windowOpen=function(url){
+            window.open(url, '_system');
+  }
+            
   //get san diego emergency feed
   $scope.refreshEmergencyFeed=function(){
     mySharedService.getEmergencyFeed().then(function(result){
