@@ -425,6 +425,7 @@ return {
                   // you might want to play a sound to get the user's attention, throw up a dialog, etc.
                   if(notification.foreground){
                       //var res=confirm(notification.payload.message);
+                      $cordovaDialogs.confirm(notification.payload.message, "Volunteer APP", ["Retweet", "Cancel"]).then(function(buttonIndex){
                         switch(buttonIndex){
                           case 0:
                             //no button
