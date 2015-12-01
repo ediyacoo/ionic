@@ -395,6 +395,9 @@ return {
 
     //pushRegister
     pushRegister: function(){
+      var that=this;
+
+
       // Register with the Ionic Push service.  All parameters are optional.
       $ionicPush.register({
         canShowAlert: true, //Can pushes show an alert on your screen?
@@ -402,82 +405,126 @@ return {
         canPlaySound: true, //Can notifications play a sound?
         canRunActionsOnWake: true, //Can run actions outside the app,
         onNotification: function(notification) {
-          // Handle new push notifications here
           console.log(notification)
-          //console.log(navigator)
 
-          var platform=notification.platform,
+          var platform=(that.user&&that.user.device)?that.user.device.platform:null,
               payload=notification.payload;
 
-          //notificationReceived
-          function notificationReceived(info){
-            //if get the message, broadcast first to get the tweet
-            $rootScope.$broadcast("pushNotificationReceived", info)
-
-            $state.go("tab.tweet");
+          //if registered event
+          if(notification.event=="registered"){
+            console.log("registered")
+            console.log("token="+notification.regid);
+          }else{
+            //handler notification by different devices
+            if(platform){
+              that.pushHandler[platform.toLowerCase()](notification);
+            }else{
+              console.log("[Push Notification]cannot detect device platform!!")
+            }
           }
-
-
-          //chck notification event
-          switch(notification.event){
-              case 'message':
-                  // if this flag is set, this notification happened while we were in the foreground.
-                  // you might want to play a sound to get the user's attention, throw up a dialog, etc.
-                  if(notification.foreground){
-                      //var res=confirm(notification.payload.message);
-                      $cordovaDialogs.confirm(notification.payload.message, "Volunteer APP", ["Retweet", "Cancle"]).then(function(buttonIndex){
-                        switch(buttonIndex){
-                          case 0:
-                            //no button
-                          break;
-                          case 1:
-                          case true:
-                            //retweet
-                            notificationReceived(payload.payload)
-                          break;
-                          case 2:
-                          case false:
-                            //cancel
-                          break;
-                        }
-                      });
-                  }else{
-                      // otherwise we were launched because the user touched a notification in the notification tray.
-                      if (notification.coldstart){
-                        console.log('--COLDSTART NOTIFICATION--' + '');
-                      }else{
-                        console.log('--BACKGROUND NOTIFICATION--' + '');
-                      }
-
-                      //retweet
-                      notificationReceived(payload.payload);
-                  }
-              break;
-              case 'error':
-                  console.log('ERROR -&gt; MSG:' + notification.message + '');
-              break;
-              case 'registered':
-                  console.log("registered")
-                  console.log("token="+notification.regid);
-              break;
-              default:
-                  console.log('EVENT -&gt; Unknown, an event was received and we do not know what it is............................................');
-                  console.log(notification)
-              break;
-          }
-
-
 
           return;
-
-          return true;
         }
       }).then(function(result){
         console.log("$ionic push: user registered")
         console.log(result);
-        console.log("--------------------------")
       });
 
+    },
+
+
+    //push handler
+    pushHandler:{
+      //android handler
+      android:function(notification){
+
+        //notificationReceived
+        function notificationReceived(info){
+          //if get the message, broadcast first to get the tweet
+          $rootScope.$broadcast("pushNotificationReceived", info)
+
+          $state.go("tab.tweet");
+        }
+
+        //chck notification event
+        switch(notification.event){
+            case 'message':
+                // if this flag is set, this notification happened while we were in the foreground.
+                // you might want to play a sound to get the user's attention, throw up a dialog, etc.
+                if(notification.foreground){
+                    $cordovaDialogs.confirm(notification.payload.message, "SD-RT-Emergency", ["Retweet", "Cancel"]).then(function(buttonIndex){
+                      switch(buttonIndex){
+                        case 0:
+                          //no button
+                        break;
+                        case 1:
+                        case true:
+                          //retweet
+                          notificationReceived(payload.payload)
+                        break;
+                        case 2:
+                        case false:
+                          //cancel
+                        break;
+                      }
+                    });
+                }else{
+                    // otherwise we were launched because the user touched a notification in the notification tray.
+                    if (notification.coldstart){
+                      console.log('[Push Notification]--COLDSTART NOTIFICATION--' + '');
+                    }else{
+                      console.log('[Push Notification]--BACKGROUND NOTIFICATION--' + '');
+                    }
+
+                    //retweet
+                    notificationReceived(payload.payload);
+                }
+            break;
+            case 'error':
+                console.log('[Push Notification] ERROR MSG:' + notification.message + '');
+            break;
+            default:
+                console.log('[Push Notification] Unknown, an event was received and we do not know what it is............................................');
+                console.log(notification)
+            break;
+        }
+
+      },
+
+      //ios handler
+      ios: function(notification){
+        //notificationReceived
+        function notificationReceived(info){
+          //if get the message, broadcast first to get the tweet
+          $rootScope.$broadcast("pushNotificationReceived", info)
+          $state.go("tab.tweet");
+        }
+
+
+        //foreground
+        if(notification.foreground=="1"){
+          $cordovaDialogs.confirm(notification.body, "SD-RT-Emergency", ["Retweet", "Cancel"]).then(function(buttonIndex){
+            switch(buttonIndex){
+              case 0:
+                //no button
+              break;
+              case 1:
+              case true:
+                //retweet
+                notificationReceived({tweet_id:notification.tweet_id, screen_name:notification.screen_name}})
+              break;
+              case 2:
+              case false:
+                //cancel
+              break;
+            }
+          });
+        }else{
+          //background
+          notificationReceived({tweet_id:notification.tweet_id, screen_name:notification.screen_name}})
+        }
+
+      }
     },
 
 
@@ -1307,7 +1354,7 @@ return {
 
   $scope.windowOpen=function(url){
     window.open(url, "_system");
-    return false; 
+    return false;
   }
 
   //get san diego emergency feed
