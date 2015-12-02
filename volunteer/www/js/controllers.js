@@ -45,7 +45,7 @@ return {
                   defer.reject({code:"userActivity-error", error:success.data})
                 }
               }).catch(function(err){
-                defer.reject({code:"getUserProfile-error", error:err})
+                defer.reject(err)
               });
 
               /**
@@ -95,7 +95,7 @@ return {
               height=300,
               left=(screen.width/2)-(width/2),
               top=(screen.height/2)-(height/2),
-              oauth_window = window.open('http://vision.sdsu.edu/hdma/auth/'+type+'?returnTo='+callback_path, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,width='+width+',height='+height+',left='+left+',top='+top);
+              oauth_window = window.open('http://vision.sdsu.edu/hdma/auth/'+type+'?returnTo='+callback_path, '_system', 'location=no,clearsessioncache=yes,clearcache=yes,width='+width+',height='+height+',left='+left+',top='+top);
 
 
           if(that.interval_oauthWindowClose){clearInterval(that.interval_oauthWindowClose)}
@@ -511,7 +511,7 @@ return {
               case 1:
               case true:
                 //retweet
-                notificationReceived({tweet_id:notification.tweet_id, screen_name:notification.screen_name}})
+                notificationReceived({tweet_id:notification.tweet_id, screen_name:notification.screen_name})
               break;
               case 2:
               case false:
@@ -521,7 +521,7 @@ return {
           });
         }else{
           //background
-          notificationReceived({tweet_id:notification.tweet_id, screen_name:notification.screen_name}})
+          notificationReceived({tweet_id:notification.tweet_id, screen_name:notification.screen_name})
         }
 
       }
@@ -833,7 +833,7 @@ return {
           text:"Please Sign up first",
           type:"button-positive",
           onTap: function(e){
-            window.open("http://vision.sdsu.edu/ibss/signup.html");
+            window.open("http://vision.sdsu.edu/ibss/signup.html", "_system");
           }
         }]
       }
@@ -964,7 +964,13 @@ return {
       }, function(err){
         if(type=='normal'){$ionicLoading.hide();}
 
-        mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
+        mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code], buttons:[{
+          text:"Please Sign up first",
+          type:"button-positive",
+          onTap: function(e){
+            window.open("http://vision.sdsu.edu/ibss/signup.html", "_system");
+          }
+        }]}, err.error);
       });
     }
   }
@@ -1080,7 +1086,7 @@ return {
           text:"Please Sign up first",
           type:"button-positive",
           onTap: function(e){
-            window.open("http://vision.sdsu.edu/ibss/signup.html");
+            window.open("http://vision.sdsu.edu/ibss/signup.html", "_system");
           }
         }]
       }
@@ -1241,7 +1247,7 @@ return {
           text:"Please Sign up first",
           type:"button-positive",
           onTap: function(e){
-            window.open("http://vision.sdsu.edu/ibss/signup.html");
+            window.open("http://vision.sdsu.edu/ibss/signup.html", "_system");
           }
         }]
       }
