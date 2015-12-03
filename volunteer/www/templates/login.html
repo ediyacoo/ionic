@@ -7,21 +7,55 @@
     </div>
   </ion-header-bar>
 
-  <ion-content class='login'>
-    <div class="padding" style='margin-top:25px; '>
-        <h3>Have you registered as an OES San Diego communication volunteer?</h3>
-        <p>If YES, Please go ahead to login with your Twitter account. </p>
+  <ion-content>
+    <div class='login'>
+      <div class="padding" style='margin-top:25px; '>
+          <h3>To retweet, you need to login with your Twitter account and register as an OES San Diego communication volunteer.</h3>
+          <p></p>
+          <!-- step1 -->
+          <div class='card' ng-class='user.userProfile?"fade":""'>
+            <div class='item item-text-wrap'>
+              <h3 class='card-num'>1. </h3>
+              <div class='card-content'>
+                <div ng-if='!user.userProfile' >
+                  <p>Please login with your Twitter account. The App will <b>ONLY retweet the tweet</b> for you and will not change anything in your Twitter account or profile.</p>
+                  <button class="button  icon-left ion-social-twitter button-calm" ng-click="login()" >Login with your Twitter Account</button>
+                  <p>
+                  </p>
+                </div>
+                <div ng-if='user.userProfile'>
+                  <p>Great! @{{user.userProfile.screen_name}} <br>You already signed in with your Twitter account.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--step2-->
+          <div class='card' ng-class='!user.userProfile?"fade":""'>
+            <div class='item item-text-wrap'>
+              <h3 class='card-num'>2. </h3>
+              <div class='card-content'>
+                <div ng-if='!user.userProfile&&!user.volunteerInfo'>
+                  <p>Register as an OES San Diego communication volunteer</p>
+                  <button class="button button-outline icon-left button-calm"  onclick="window.open('http://vision.sdsu.edu/ibss/signup.html', '_system');return false;">Register an OES San Diego communication volunteer</button>
+                </div>
 
-        <button class="button icon-left ion-social-twitter button-calm" ng-click="login()">Login with your Twitter Account</button>
-        <p>The App will <b>ONLY retweet the tweet</b> for you <Br>
-          and will not change anything in your Twitter account or profile.
-        </p>
-    </div>
+                <div ng-if='user.userProfile&&user.volunteerInfo'>
+                  <p>You are the OES San Diego communication volunteer</p>
+                </div>
 
-    <div class="padding" style='margin-top:80px; '>
-        <h3>If Not?</h3>
-        <p>Please click this button to register.</p>
-        <button class="button button-outline icon-left button-calm" onclick="window.open('http://vision.sdsu.edu/ibss/signup.html', '_system');return false;">Register an OES San Diego communication volunteer</button>
+                <div ng-if='user.userProfile&&!user.volunteerInfo'>
+                  <p>It seems you have not registered as OES San Diego communication volunteer. Please click this button to register.</p>
+                    <button class="button icon-left button-calm" onclick="window.open('http://vision.sdsu.edu/ibss/signup.html', '_system');return false;">Register an OES San Diego communication volunteer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      </div>
     </div>
+    <!--end login-->
+
+
+
   </ion-content>
 </ion-modal-view>
