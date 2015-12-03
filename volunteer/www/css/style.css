@@ -14,7 +14,7 @@
 .tweet-avatar {text-align:center; }
 .tweet-avatar img {border-radius:50%; width:90%; height:90%; margin:5%; max-height:50px; max-width:50px;   }
 
-.tweet-username {font-size:1.5em; width:100%; margin-top:10px; margin-left: 10px;  }
+.tweet-username {font-size:1.3em; width:100%; margin-top:10px; margin-left: 10px;  }
 .tweet-username span {font-size:0.8em; color:#999999; font-weight:normal; display:block; margin-top:2px; }
 .tweet-username span a {color:#999999; text-decoration:underline;}
 .tweet-datetime {font-size:0.6em !important; }
@@ -61,6 +61,8 @@
 .feedList .buttons {position:absolute; top:10px; right:10px;}
 .feedList .buttons .button {margin-left:15px !important;}
 .feedList .tab-item span {font-size:1.5em; }
+.feedList .item-avatar > img:first-child {max-width:50px !important; max-height:50px !important; }
+.feedList .item-avatar {padding-left:85px !important; height:auto !important;  }
 
 .account .list .item-avatar > img:first-child {max-width:55px !important; max-height:55px !important; top:10px !important; }
 .account .retweet {font-weight:bold; }
@@ -68,7 +70,7 @@
 
 .login * {text-align:center; }
 .login .card {margin-top:20px; padding-top:10px; padding-bottom:10px; }
-.login .card-num {float:left; width:10%; font-size:2em; color:#555555;  }
+.login .card-num {float:left; width:10%; font-size:2em; color:#555555; text-align:left; }
 .login .card-content {float:left; width:90%; }
 .login .card-content p {text-align:left; }
 .login .fade {background-color:#cccccc;  }
@@ -77,3 +79,12 @@
 
 .share .padding {text-align:center; }
 .share textarea {height:60px; }
+
+
+/** media */
+/** iphon5 */
+@media (max-width:330px){
+  h2 {font-size:1.2em !important; }
+  h3 {font-size:18px;}
+  p {font-size:13px !important; }
+}
