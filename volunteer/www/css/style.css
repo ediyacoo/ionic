@@ -66,8 +66,13 @@
 .account .retweet {font-weight:bold; }
 
 
-
 .login * {text-align:center; }
+.login .card {margin-top:20px; padding-top:10px; padding-bottom:10px; }
+.login .card-num {float:left; width:10%; font-size:2em; color:#555555;  }
+.login .card-content {float:left; width:90%; }
+.login .card-content p {text-align:left; }
+.login .fade {background-color:#cccccc;  }
+.login .item-text-wrap {display:inline-block; width:100%; background-color:transparent }
 
 
 .share .padding {text-align:center; }

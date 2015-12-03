@@ -28,24 +28,37 @@ return {
               TwitterService.initialize().then(function(result){
                 if(result){
                   temp_result=result;
+
+                  //save userProfile
+                  that.user.userProfile=result.userProfile;
+
                   //check if the volunteer
                   return that.checkVolunteer(result.screen_name)
                 }
               }).then(function(output){
                 defer.resolve(temp_result)
 
-                //save userProfile
-                var userProfile=temp_result.userProfile;
-                that.user.userProfile=userProfile;
-
                 //save user actitvites
-                return $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"userProfile", userProfile:userProfile}, {headers:{"Authorization":null, "Content-Type":"application/json"}})
+                return $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"userProfile", userProfile:temp_result.userProfile}, {headers:{"Authorization":null, "Content-Type":"application/json"}})
               }).then(function(success){
                 if(success.data&&success.data.status!='success'){
                   defer.reject({code:"userActivity-error", error:success.data})
                 }
               }).catch(function(err){
-                defer.reject({code:"getUserProfile-error", error:err})
+                var errObj=that.error[err.code];
+
+                /**
+                //if there is any dialog obj in the error obj
+                if(errObj&&errObj.dialog){
+                  var buttons=errObj.dialog.buttons || null,
+                      type=errObj.dialog.type || "alert";
+
+                  that.showPopup(type, {title:err.code, template:errObj.msg, buttons:buttons}, err.error);
+                }
+                */
+
+                defer.reject(err)
+
               });
 
               /**
@@ -95,7 +108,7 @@ return {
               height=300,
               left=(screen.width/2)-(width/2),
               top=(screen.height/2)-(height/2),
-              oauth_window = window.open('http://vision.sdsu.edu/hdma/auth/'+type+'?returnTo='+callback_path, '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,width='+width+',height='+height+',left='+left+',top='+top);
+              oauth_window = window.open('http://vision.sdsu.edu/hdma/auth/'+type+'?returnTo='+callback_path, '_system', 'location=no,clearsessioncache=yes,clearcache=yes,width='+width+',height='+height+',left='+left+',top='+top);
 
 
           if(that.interval_oauthWindowClose){clearInterval(that.interval_oauthWindowClose)}
@@ -117,7 +130,7 @@ return {
     //logout
     logout: function(){
       //clear $localStorage and user variable
-      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:"", retweets:{}, volunteerInfo:{}})
+      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:null, retweets:null, volunteerInfo:null})
       $localStorage.oauth["twitter"]=null;
     },
 
@@ -273,7 +286,7 @@ return {
         device:null,
 
         //interested area
-        interestedArea:this.getOauth("twitter", "interestedArea") || "",
+        interestedArea:this.getOauth("twitter", "interestedArea") || null,
 
         //volunteers array. The data will be retrieved from the findVoluntter function
         volunteers:this.getOauth("twitter", "volunteers") || [],
@@ -282,10 +295,10 @@ return {
         userProfile:this.getOauth("twitter", "userProfile") || null,
 
         //retweet
-        retweets:this.getOauth("twitter", "retweets") || {},
+        retweets:this.getOauth("twitter", "retweets") || null,
 
         //volunteer info
-        volunteerInfo:this.getOauth("twitter", "volunteerInfo") || {}
+        volunteerInfo:this.getOauth("twitter", "volunteerInfo") || null
       };
 
       return this;
@@ -322,7 +335,7 @@ return {
             //convert retweet array to obj
             var retweets=that.setRetweetObj(data.retweets);
 
-            that.storeOauth("twitter", {volunteers:data.volunteers || {}, retweets:retweets || {}, interestedArea:data.interestedArea || "", volunteerInfo:data.volunteerInfo || {}})
+            that.storeOauth("twitter", {volunteers:data.volunteers || {}, retweets:retweets || null, interestedArea:data.interestedArea || null, volunteerInfo:data.volunteerInfo || null})
           }else{
             defer.reject({code:"CheckVolunteer-not-signup", error:result})
           }
@@ -588,15 +601,22 @@ return {
 
     //error code and description
     error:{
-      "$http-error":"$http error",
-      "CheckVolunteer-not-signup":"It seems you have not signed up as an OES volunteer. Please click on the following button to sign up.",
-      "CheckVolunteer-no-screen_name":"no screen_name.",
-      "findVolunteer-no-volunteer":"We cannot find any volunteers in your most interested area.",
-      "findVolunteer-no-oauth-info":"No oauth or no screen_name info",
-      "getUserProfile-error":"getUserProfile-error",
-      "twitterOauthLogin-login-failure":"Cannot login with your Twitter account",
-      "getOESTweet-length=0":"OES Tweets length==0",
-      "userActivity-error":"Error in User Activity"
+      "$http-error":{msg:"$http error"},
+      "CheckVolunteer-not-signup":{msg:"It seems you have not signed up as an OES volunteer. Please click on the following button to sign up.", dialog:{type:"confirm", buttons:[
+        {text:"Cancel"},
+        {
+          text:"Sign up",
+          type:"button-positive",
+          onTap: function(e){window.open("http://vision.sdsu.edu/ibss/signup.html", "_system");}
+        }
+      ]}},
+      "CheckVolunteer-no-screen_name":{msg:"no screen_name."},
+      "findVolunteer-no-volunteer":{msg:"We cannot find any volunteers in your most interested area."},
+      "findVolunteer-no-oauth-info":{msg:"No oauth or no screen_name info"},
+      "getUserProfile-error":{msg:"getUserProfile-error"},
+      "twitterOauthLogin-login-failure":{msg:"Cannot login with your Twitter account"},
+      "getOESTweet-length=0":{msg:"OES Tweets length==0"},
+      "userActivity-error":{msg:"Error in User Activity"}
     }
 
 
@@ -728,7 +748,7 @@ return {
       //hide loading icon
       $ionicLoading.hide();
     }, function(err){
-      mySharedService.showPopup("alert", {title:mySharedService.error[err.code], template:JSON.stringify(err.error)});
+      mySharedService.showPopup("alert", {title:mySharedService.error[err.code].msg, template:JSON.stringify(err.error)});
     })
   }
 
@@ -750,6 +770,9 @@ return {
 
   //selected tab
   $scope.selectedTab="hour3";
+
+  //user
+  $scope.user=mySharedService.user;
 
 
   //watch mySharedService.user.retweets. if there is any chnage, update $scope.tweetList
@@ -788,7 +811,7 @@ return {
 
       defer.resolve();
     }, function(err){
-      mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
+      mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code].msg}, err.error);
       defer.reject();
     })
 
@@ -801,11 +824,8 @@ return {
   $scope.click=function(t){
     $scope.t=t
 
-
-    //check if a user is logged in
-    var oauth=$localStorage.oauth;
-
-    if(oauth&&oauth.twitter){
+    //check if user is already login twitter and signed up as volunteer
+    if(TwitterService.isAuthenticated() && $scope.user.volunteerInfo){
       $scope.modal=$scope.modal_share;
     }else{
       $scope.modal=$scope.modal_login;
@@ -827,18 +847,7 @@ return {
       $scope.modal=$scope.modal_share;
       $scope.modal.show();
     }, function(err){
-      var buttons=null
-      if(err.code=="CheckVolunteer-not-signup"){
-        buttons=[{
-          text:"Please Sign up first",
-          type:"button-positive",
-          onTap: function(e){
-            window.open("http://vision.sdsu.edu/ibss/signup.html");
-          }
-        }]
-      }
 
-      mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code], buttons:buttons}, err.error);
     })
 
 
@@ -962,19 +971,26 @@ return {
           break;
         }
       }, function(err){
-        if(type=='normal'){$ionicLoading.hide();}
 
-        mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
+        var errObj=mySharedService.error[err.code];
+        if(errObj&&errObj.dialog){
+          var buttons=errObj.dialog.buttons || null,
+              type=errObj.dialog.type || "alert";
+          mySharedService.showPopup(type, {title:err.code, template:errObj.msg, buttons:buttons}, err.error);
+        }
+
+
+        $ionicLoading.hide();
+        $scope.$broadcast('scroll.refreshComplete')
       });
     }
   }
 
-
-  //is login
-  $scope.isLogin=false;
-
   //only show the interested area
   $scope.isOnlyMostInterestedArea=true;
+
+  //user
+  $scope.user=mySharedService.user;
 
   //switchVolunteer
   $scope.switchVolunteer=function(){
@@ -984,66 +1000,17 @@ return {
 
   //check when user enter to this view
   $scope.$on('$ionicView.enter', function(e) {
+    //update $scope.user
+    $scope.user=mySharedService.user;
+
+
     //check if the user already loing with twitter account first
-    if(TwitterService.isAuthenticated()){
-      if(mySharedService.user.volunteers.length==0){
+    if(TwitterService.isAuthenticated() && $scope.user.volunteerInfo){
+      if($scope.user.volunteers.length==0){
         findVolunteer();
-      }else{
-        $scope.user=mySharedService.user;
       }
-      $scope.isLogin=true;
-    }else{
-      //test only
-      if(mySharedService.mobileAndTabletcheck()){
-        //$scope.modal.show();
-        $scope.isLogin=false;
-      }else{
-        //test only
-        $scope.volunteers=[
-          {
-            "updated": "2015-08-31T17:27:27.743Z",
-            "timestamp": "8/28/2015 17:11:58",
-            "name": "hdma sdsu",
-            "emailaddress": "hdmasdsu@gmail.com",
-            "phonenumber": {
-              "$t": ""
-            },
-            "twitteraccount": "hdmasdsu",
-            "twitteraccountaccess": "Yes",
-            "gender": "N/A",
-            "age": "25 - 34",
-            "howlonghaveyouusedtwitter": "4 years",
-            "areyouproficientinanyotherlanguages": "Spanish, Tagalog, Vietnamese, Korean, Japanese, Mandarin/Chinese, Arabic",
-            "mostimportantareatoyou": "Central:  Central San Diego Neighborhoods  (92101- 92117, 92119- 92124, 92126- 92140, 92142, 92145, 92147, 92149, 92150)",
-            "secondarea_3": "North:  Fallbrook  (92028, 92088)",
-            "thirdarea_3": "North:  Fallbrook  (92028, 92088)",
-            "individualorgrouprepresentative": "Individual"
-          },
-          {
-            "updated": "2015-08-31T17:27:27.743Z",
-            "timestamp": "8/30/2015 19:37:57",
-            "name": "April Anderson",
-            "emailaddress": "april.m.anderson05@gmail.com",
-            "phonenumber": "619-490-5750",
-            "twitteraccount": "@knowmad05",
-            "twitteraccountaccess": "Yes",
-            "gender": "Transgender",
-            "age": "25 - 34",
-            "howlonghaveyouusedtwitter": "3 years",
-            "areyouproficientinanyotherlanguages": {
-              "$t": ""
-            },
-            "mostimportantareatoyou": "Central:  Central San Diego Neighborhoods  (92101- 92117, 92119- 92124, 92126- 92140, 92142, 92145, 92147, 92149, 92150)",
-            "secondarea_3": "North:  Escondido, Del Dios, Elfin Forest, Harmony Grove  (92023- 92027, 92029, 92030, 92033, 92046)",
-            "thirdarea_3": "Central:  Central San Diego Neighborhoods  (92152- 92155, 92158- 92172, 92174- 92177, 92179, 92182, 92184, 92186, 92187, 92190- 92199)",
-            "individualorgrouprepresentative": "Individual"
-          }
-        ].sort(function(a,b){return a.twitteraccount > b.twitteraccount});
-      }
-
-
-    //  $scope.modal.show();
     }
+
   });
 
 
@@ -1074,18 +1041,7 @@ return {
 
       //$scope.modal.hide();
     }, function(err){
-      var buttons=null
-      if(err.code=="CheckVolunteer-not-signup"){
-        buttons=[{
-          text:"Please Sign up first",
-          type:"button-positive",
-          onTap: function(e){
-            window.open("http://vision.sdsu.edu/ibss/signup.html");
-          }
-        }]
-      }
 
-      mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code], buttons:buttons}, err.error);
     });
   }
 
@@ -1169,8 +1125,6 @@ return {
     $scope.modal = modal;
   });
 
-  //to check if an user already login
-  $scope.isLogin=false;
 
   $scope.user=mySharedService.user;
 
@@ -1216,13 +1170,10 @@ return {
 
   //check when user enter to this view
   $scope.$on('$ionicView.enter', function(e) {
-    //check if the user already loing with twitter account first
-    if(TwitterService.isAuthenticated()){
-      $scope.isLogin=true;
-    }else{
-      $scope.isLogin=false;
-    }
+    //update $scope.user
+    $scope.user=mySharedService.user;
   });
+
 
   //login
   $scope.login=function(){
@@ -1235,18 +1186,7 @@ return {
       },2000)
 
     }, function(err){
-      var buttons=null
-      if(err.code=="CheckVolunteer-not-signup"){
-        buttons=[{
-          text:"Please Sign up first",
-          type:"button-positive",
-          onTap: function(e){
-            window.open("http://vision.sdsu.edu/ibss/signup.html");
-          }
-        }]
-      }
 
-      mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code], buttons:buttons}, err.error);
     });
   }
 
@@ -1258,7 +1198,6 @@ return {
       {text:"Cancel"},
       {text:"Logout", type:"button-positive", onTap: function(e){
         mySharedService.logout();
-        $scope.isLogin=false;
       }}
     ]});
   }
@@ -1301,7 +1240,7 @@ return {
       //switch to tweetlist page
       $state.go("tab.tweet");
     }, function(err){
-      mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code]}, err.error);
+      mySharedService.showPopup("alert", {title:err.code, template:mySharedService.error[err.code].msg}, err.error);
     })
   }else{
     //switch to tweetlist page
