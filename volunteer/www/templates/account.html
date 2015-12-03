@@ -37,7 +37,7 @@
 
                 <div ng-if='user.userProfile&&!user.volunteerInfo'>
                   <p>It seems you have not registered as OES San Diego communication volunteer. Please click this button to register.</p>
-                    <button class="button icon-left button-calm" onclick="window.open('http://vision.sdsu.edu/ibss/signup.html', '_system');return false;">Register an OES San Diego communication volunteer</button>
+                    <button class="button icon-left button-calm" onclick="window.open('http://vision.sdsu.edu/ibss/signup.html', '_system');return false;">Volunteer Register</button>
                 </div>
               </div>
             </div>
@@ -74,12 +74,13 @@
         <!--more options-->
         <div ng-if="!user.volunteerInfo">
           <h4>Wanna see more options?</h4>
-          <button class="button icon-left  button-calm" onclick="window.open('http://vision.sdsu.edu/ibss/signup.html', '_system');return false;">Register an OES San Diego communication volunteer</button>
+          <p>Please register as an OES communication Volunteer</p>
+          <button class="button icon-left  button-calm" onclick="window.open('http://vision.sdsu.edu/ibss/signup.html', '_system');return false;">Volunteer Register</button>
         </div>
 
         <p></p>
         <!--logout-->
-        <button style='margin-top:100px; ' class="button icon-left button-outline ion-ios-person button-calm" ng-click="logout()">Logout your Twitter Account</button>
+        <button style='margin-top:100px; ' class="button icon-left button-outline ion-social-twitter button-calm" ng-click="logout()">Twitter Logout</button>
 
       </div>
     </div>
