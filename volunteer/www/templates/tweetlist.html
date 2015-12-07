@@ -1,4 +1,4 @@
-<ion-view view-title="SD Emergency Tweets from @ReadySanDiego">
+<ion-view view-title="@ReadySanDiego">
   <!--
   <ion-nav-buttons side="right" ng-show="false" ng-click="$state.go('home')">
     <button class="button button-icon button-clear ion-home"></button>
@@ -6,11 +6,11 @@
 -->
 <ion-header-bar class="bar-subheader tweet-subheader" >
   <!-- tabs-top -->
-  <div class="tweet-tabs tabs ">
-    <a class="tab-item active" ng-class="{'active':selectedTab=='hour3'}" ng-click="changeTweetList('hour3')">Within 3 hours</a>
-    <a class="tab-item" ng-class="{'active':selectedTab=='today'}" ng-click="changeTweetList('today')">Today</a>
-    <a class="tab-item" ng-class="{'active':selectedTab=='top5'}" ng-click="changeTweetList('top5')">Recent 5 tweets</a>
-    <a class="tab-item" ng-class="{'active':selectedTab=='historical'}" ng-click="changeTweetList('historical')">Historical</a>
+  <div class="tweet-tabs tabs tabs-icon-left">
+    <a class="tab-item active" ng-class="{'active':selectedTab=='hour3'}" ng-click="changeTweetList('hour3')"><i class='icon ion-ios-clock'></i>3 hours</a>
+    <a class="tab-item" ng-class="{'active':selectedTab=='today'}" ng-click="changeTweetList('today')"><i class='icon ion-ios-clock'></i>Today</a>
+    <a class="tab-item" ng-class="{'active':selectedTab=='top5'}" ng-click="changeTweetList('top5')"><i class='icon ion-social-twitter'></i>Latest</a>
+    <a class="tab-item" ng-class="{'active':selectedTab=='historical'}" ng-click="changeTweetList('historical')"><i class='icon ion-social-twitter'></i>All</a>
   </div>
 </ion-header-bar>
 
