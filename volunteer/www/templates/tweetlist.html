@@ -7,7 +7,7 @@
 <ion-header-bar class="bar-subheader tweet-subheader" >
   <!-- tabs-top -->
   <div class="tweet-tabs tabs tabs-icon-left">
-    <a class="tab-item active" ng-class="{'active':selectedTab=='hour3'}" ng-click="changeTweetList('hour3')"><i class='icon ion-ios-clock'></i>Within 3hrs</a>
+    <a class="tab-item active" ng-class="{'active':selectedTab=='hour3'}" ng-click="changeTweetList('hour3')"><i class='icon ion-ios-clock'></i>In 3hrs</a>
     <a class="tab-item" ng-class="{'active':selectedTab=='today'}" ng-click="changeTweetList('today')"><i class='icon ion-ios-clock'></i>Today</a>
     <a class="tab-item" ng-class="{'active':selectedTab=='top5'}" ng-click="changeTweetList('top5')"><i class='icon ion-social-twitter'></i>Latest</a>
     <a class="tab-item" ng-class="{'active':selectedTab=='historical'}" ng-click="changeTweetList('historical')"><i class='icon ion-social-twitter'></i>Historical</a>
@@ -28,42 +28,34 @@
 
 
       <div class="list card" ng-repeat="t in tweetList" ng-click="click(t)" ng-if='t.user.screen_name=="ReadySanDiego" && tweetList.length>0'>
-        <div class='row row-top' >
-          <!--avatar-->
-          <div class='col-20 tweet-avatar' ng-if="t.user.profile_image_url_https">
-            <img src="{{t.user.profile_image_url_https}}">
+        <div class='item item-avatar'>
+          <img src="{{t.user.profile_image_url_https}}">
+          <h2 class='tweet-username'>
+            {{t.user.name}}
+            <span class='tweet-screen_name'><a href='#'>@{{t.user.screen_name}}</a></span>
+            <span class='tweet-datetime'> {{moment(t.created_at).format("MM-DD-YYYY hh:mm:ss a")}}</span>
+          </h2>
+
+          <!-- isRetweeted-->
+          <div class='tweet-isRetweeted' ng-show='t.isRetweeted'>
+            <i class="fa fa-retweet"></i>
+            <i class='fa ion-ios-checkmark'></i>
+            <!--<button class="button icon-left button-outline ion-ios-checkmark-outline button-calm">Retweeted</button>-->
           </div>
-          <!--title-->
-          <div class='col-80 title' ng-if='t.created_at_local'>
-            <h2 class='tweet-username'>
-              {{t.user.name}}
-              <span class='tweet-screen_name'><a href='#'>@{{t.user.screen_name}}</a></span>
-              <span class='tweet-datetime'> {{moment(t.created_at).format("MM-DD-YYYY hh:mm:ss a")}}</span>
-            </h2>
-
-            <!-- isRetweeted-->
-            <div class='tweet-isRetweeted' ng-show='t.isRetweeted'>
-              <i class="fa fa-retweet"></i>
-              <i class='fa ion-ios-checkmark'></i>
-              <!--<button class="button icon-left button-outline ion-ios-checkmark-outline button-calm">Retweeted</button>-->
-            </div>
-            <div class='tweet-isRetweeted' ng-show='!t.isRetweeted'>
-              <!--<i class="fa fa-retweet"></i>-->
-              <button class='button button-small button-positive'><i class="fa fa-retweet" style='color:#ffffff; margin:2.5px 2.5px 0px 0px ; font-size:1.6em;'></i>Retweet</button>
-            </div>
-          </div>
-
-        </div>
-
-        <!--content-->
-        <div class='row'>
-          <div class='col'>
-            <p class='tweet-text'>{{t.text}}</p>
-            <p class='tweet-media' ng-if='t.entities&&t.entities.media&&t.entities.media.length>0'>
-              <img src="{{t.entities.media[0].media_url_https}}">
-            </p>
+          <div class='tweet-isRetweeted' ng-show='!t.isRetweeted'>
+            <!--<i class="fa fa-retweet"></i>-->
+            <button class='button button-small button-calm'><i class="fa fa-retweet" style='color:#ffffff; margin:2.5px 2.5px 0px 0px ; font-size:1.6em;'></i>Retweet</button>
           </div>
         </div>
+
+        <div class='item tweet-content'>
+          <p class='tweet-text'>{{t.text}}</p>
+          <p class='tweet-media' ng-if='t.entities&&t.entities.media&&t.entities.media.length>0'>
+            <img src="{{t.entities.media[0].media_url_https}}">
+          </p>
+        </div>
+
+
       </div>
     </div>
 

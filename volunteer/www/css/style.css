@@ -5,6 +5,12 @@
 .card {margin:10px 0px 10px 0px; }
 .card:hover {background-color:#F8F8F8; }
 
+.item-avatar {padding-left:90px !important; height:auto;}
+.item-avatar > img {border-radius:8px !important; box-shadow:3px 3px 15px #cccccc; width:100%; height:100%; max-height:50px !important; max-width:50px !important;   }
+.item-avatar * {text-align:left; }
+
+
+/** tweetlist */
 .tweet-tabs {top:0px !important; position:relative; border-bottom:1px solid #eeeeee; background-color:#ffffff; }
 .tweet-tabs .tab-item {font-size:.85em !important; }
 .tweet-tabs .tab-item i {font-size:.85em; }
@@ -13,20 +19,18 @@
 .tweet-listCard .no-tweet {text-align:center; padding-top:150px; font-size:1.1em; font-weight:normal; line-height:1.5em;   }
 .tweet-listCard .no-tweet .icon {font-size:7em; margin-bottom:25px; }
 
-.tweet-avatar {text-align:center; }
-.tweet-avatar img {border-radius:8px; box-shadow:3px 3px 15px #cccccc; width:90%; height:90%; margin:5%; max-height:50px; max-width:50px;   }
+.tweet-listCard .item-avatar {border-bottom:0px !important; }
+.tweet-listCard .tweet-content {border-top:0px !important; padding-top:1px; }
+.tweet-listCard .list {margin-bottom:15px;}
 
 .tweet-username {font-size:1.3em; width:100%; margin-top:10px; margin-left: 10px;  }
 .tweet-username span {font-size:0.8em; color:#999999; font-weight:normal; display:block; margin-top:2px; }
 .tweet-username span a {color:#999999; text-decoration:underline;}
-.tweet-datetime {font-size:0.6em !important; }
+.tweet-datetime {font-size:0.75em !important; }
 
-.tweet-text {font-size:1.2em; }
+.tweet-text {font-size:17px !important; }
 .tweet-toolbox {padding:0px; margin:0px; list-style:none; width:100%; display:inline-block;  }
 .tweet-toolbox li {float:left; width:30%; padding:0% 1.5% 0% 1.5%; ; display:block ; text-align:center; }
-
-
-
 
 .tweet-media img {border-radius:10px; width:100%; max-width:600px;  }
 
@@ -34,6 +38,7 @@
 .tweet-isRetweeted i {font-size:1.7em; color:#555555;  float:left; margin-left:5px;  }
 
 
+/** home */
 .home {width:100%; height:100%; position:relative; }
 .home .row .col {text-align:center; }
 .home .row {margin:0px; }
@@ -44,12 +49,14 @@
 .home img.logo {width:60px; height:60px; }
 
 
+/** about */
 .about {margin:20px; text-align:justify; }
 .about ul {list-style:disc; margin-left:20px; text-align:left; }
 .about img.logo {width:60px; height:60px; }
 .about .logo .col {text-align:center; }
 
 
+/** volunteer */
 .volunteer .title {text-align:center; padding:20px; margin-bottom:20px;   }
 .volunteer .title span {display:block; margin-top:15px; font-size:.85em; }
 .volunteer .buttons {text-align:right; position:absolute; top:15px; right:15px; }
@@ -59,20 +66,24 @@
 .volunteer .retweetNum i {font-size:1.3em; }
 
 
-.list .item-avatar {padding-left:115px !important; height:100px !important;  }
-.list .item-avatar > img:first-child {max-width:70px !important; max-height:70px !important; }
-.list .item-avatar * {text-align:left; }
 
+/** feed */
 .feedList .buttons {position:absolute; top:10px; right:10px;}
 .feedList .buttons .button {margin-left:15px !important;}
 .feedList .tab-item span {font-size:1.5em; }
-.feedList .item-avatar > img:first-child {max-width:50px !important; max-height:50px !important; }
+.feedList .item-avatar > img:first-child {max-width:50px !important; max-height:50px !important; box-shadow:0px 0px 0px #cccccc; }
 .feedList .item-avatar {padding-left:85px !important; height:auto !important;  }
 
-.account .list .item-avatar > img:first-child {max-width:55px !important; max-height:55px !important; top:10px !important; }
+
+/** account */
+.account * {text-align:center; }
+.account .list .item-avatar > img:first-child {max-width:55px !important; max-height:55px !important; top:20px !important; }
+.account .list .item {padding-left:90px !important; text-align:left;}
+.account .list * {text-align:left;}
 .account .retweet {font-weight:bold; }
 
 
+/** login */
 .login * {text-align:center; }
 .login .card {margin-top:20px; padding-top:10px; padding-bottom:10px; }
 .login .card-num {float:left; width:10%; font-size:2em; color:#555555; text-align:left; }
@@ -84,6 +95,8 @@
 
 .share .padding {text-align:center; }
 .share textarea {height:60px; }
+.share .item-avatar {border-bottom:0px !important; }
+.share .tweet-content {border-top:0px !important; padding-top:1px; }
 
 
 /** media */
