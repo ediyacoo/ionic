@@ -665,6 +665,20 @@ return {
 
 
   })
+
+
+  //resume the app
+  $ionicPlatform.on("resume", function(){
+    console.log("resume app...........check volunteer...............")
+
+    //check the user has signed up as a volunteer or not.
+    var oauth_twitter=mySharedService.getOauth("twitter");
+    if(oauth_twitter && oauth_twitter.screen_name){
+      mySharedService.checkVolunteer(oauth_twitter.screen_name).then(function(result){
+        console.log(result)
+      });
+    }
+  })
 })
 
 
@@ -683,14 +697,20 @@ return {
   function checkRetweet(lists){
     var retweets=mySharedService.user.retweets;
 
-    if(retweets&&retweets.length>0&&lists){
+    if(lists){
       lists=lists.map(function(l, i){
-        if(!l.isRetweeted&&!l.retweetTime){
-          if(retweets[l.id_str]){
-            l.isRetweeted=true;
-            l.retweetTime=retweets[l.id_str].datetime_utc;
+        if(retweets&&retweets.length>0){
+          if(!l.isRetweeted&&!l.retweetTime){
+            if(retweets[l.id_str]){
+              l.isRetweeted=true;
+              l.retweetTime=retweets[l.id_str].datetime_utc;
+            }
           }
+        }else{
+          l.isRetweeted=null;
+          l.retweetTime=null;
         }
+
         return l
       })
     }
@@ -734,6 +754,14 @@ return {
 
   })
 
+
+
+  //check when user enter to this view
+  $scope.$on('$ionicView.enter', function(e) {
+    //update tweet list
+    //if user is already logout, we need to change the isTweeted value
+    $scope.changeTweetList($scope.selectedTab)
+  });
 
 
   //if there is no existed tweets, manully get tweets
