@@ -6,8 +6,8 @@
 .card:hover {background-color:#F8F8F8; }
 
 .tweet-tabs {top:0px !important; position:relative; border-bottom:1px solid #eeeeee; background-color:#ffffff; }
-.tweet-tabs .tab-item {font-size:.9em !important; }
-.tweet-tabs .tab-item i {font-size:.9em; }
+.tweet-tabs .tab-item {font-size:.85em !important; }
+.tweet-tabs .tab-item i {font-size:.85em; }
 .tweet-listCard {margin-top:-4px; }
 
 .tweet-listCard .no-tweet {text-align:center; padding-top:150px; font-size:1.1em; font-weight:normal; line-height:1.5em;   }

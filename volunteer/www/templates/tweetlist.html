@@ -1,4 +1,4 @@
-<ion-view view-title="@ReadySanDiego">
+<ion-view view-title="SD Emergency Tweet">
   <!--
   <ion-nav-buttons side="right" ng-show="false" ng-click="$state.go('home')">
     <button class="button button-icon button-clear ion-home"></button>
@@ -7,10 +7,10 @@
 <ion-header-bar class="bar-subheader tweet-subheader" >
   <!-- tabs-top -->
   <div class="tweet-tabs tabs tabs-icon-left">
-    <a class="tab-item active" ng-class="{'active':selectedTab=='hour3'}" ng-click="changeTweetList('hour3')"><i class='icon ion-ios-clock'></i>3 hours</a>
+    <a class="tab-item active" ng-class="{'active':selectedTab=='hour3'}" ng-click="changeTweetList('hour3')"><i class='icon ion-ios-clock'></i>Within 3hrs</a>
     <a class="tab-item" ng-class="{'active':selectedTab=='today'}" ng-click="changeTweetList('today')"><i class='icon ion-ios-clock'></i>Today</a>
     <a class="tab-item" ng-class="{'active':selectedTab=='top5'}" ng-click="changeTweetList('top5')"><i class='icon ion-social-twitter'></i>Latest</a>
-    <a class="tab-item" ng-class="{'active':selectedTab=='historical'}" ng-click="changeTweetList('historical')"><i class='icon ion-social-twitter'></i>All</a>
+    <a class="tab-item" ng-class="{'active':selectedTab=='historical'}" ng-click="changeTweetList('historical')"><i class='icon ion-social-twitter'></i>Historical</a>
   </div>
 </ion-header-bar>
 
@@ -46,6 +46,10 @@
               <i class="fa fa-retweet"></i>
               <i class='fa ion-ios-checkmark'></i>
               <!--<button class="button icon-left button-outline ion-ios-checkmark-outline button-calm">Retweeted</button>-->
+            </div>
+            <div class='tweet-isRetweeted' ng-show='!t.isRetweeted'>
+              <!--<i class="fa fa-retweet"></i>-->
+              <button class='button button-small button-positive'><i class="fa fa-retweet" style='color:#ffffff; margin:2.5px 2.5px 0px 0px ; font-size:1.6em;'></i>Retweet</button>
             </div>
           </div>
 
