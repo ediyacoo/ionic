@@ -675,7 +675,7 @@ return {
     var oauth_twitter=mySharedService.getOauth("twitter");
     if(oauth_twitter && oauth_twitter.screen_name){
       mySharedService.checkVolunteer(oauth_twitter.screen_name).then(function(result){
-        console.log(result)
+        //console.log(result)
       });
     }
   })
