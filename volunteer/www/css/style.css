@@ -8,7 +8,7 @@
 .item-avatar {padding-left:90px !important; height:auto;}
 .item-avatar > img {border-radius:8px !important; box-shadow:3px 3px 15px #cccccc; width:100%; height:100%; max-height:50px !important; max-width:50px !important;   }
 .item-avatar * {text-align:left; }
-
+.item-avatar > p {font-size:.8em; line-height:16px; }
 
 /** tweetlist */
 .tweet-tabs {top:0px !important; position:relative; border-bottom:1px solid #eeeeee; background-color:#ffffff; }
@@ -20,19 +20,9 @@
 .tweet-listCard .no-tweet .icon {font-size:7em; margin-bottom:25px; }
 
 .tweet-listCard .item-avatar {border-bottom:0px !important; }
-.tweet-listCard .tweet-content {border-top:0px !important; padding-top:1px; }
+.tweet-listCard .item-text-wrap {border-top:0px !important; padding-top:0px; }
 .tweet-listCard .list {margin-bottom:15px;}
 
-.tweet-username {font-size:1.3em; width:100%; margin-top:10px; margin-left: 10px;  }
-.tweet-username span {font-size:0.8em; color:#999999; font-weight:normal; display:block; margin-top:2px; }
-.tweet-username span a {color:#999999; text-decoration:underline;}
-.tweet-datetime {font-size:0.75em !important; }
-
-.tweet-text {font-size:17px !important; }
-.tweet-toolbox {padding:0px; margin:0px; list-style:none; width:100%; display:inline-block;  }
-.tweet-toolbox li {float:left; width:30%; padding:0% 1.5% 0% 1.5%; ; display:block ; text-align:center; }
-
-.tweet-media img {border-radius:10px; width:100%; max-width:600px;  }
 
 .tweet-isRetweeted {position:absolute; right:20px; top:20px; }
 .tweet-isRetweeted i {font-size:1.7em; color:#555555;  float:left; margin-left:5px;  }
@@ -71,8 +61,7 @@
 .feedList .buttons {position:absolute; top:10px; right:10px;}
 .feedList .buttons .button {margin-left:15px !important;}
 .feedList .tab-item span {font-size:1.5em; }
-.feedList .item-avatar > img:first-child {max-width:50px !important; max-height:50px !important; box-shadow:0px 0px 0px #cccccc; }
-.feedList .item-avatar {padding-left:85px !important; height:auto !important;  }
+.feedList .item-avatar > img:first-child {box-shadow:0px 0px 0px #cccccc; margin-top:0px;  }
 
 
 /** account */
@@ -96,13 +85,20 @@
 .share .padding {text-align:center; }
 .share textarea {height:60px; }
 .share .item-avatar {border-bottom:0px !important; }
-.share .tweet-content {border-top:0px !important; padding-top:1px; }
+.share .item-text-wrap {border-top:0px !important; padding-top:1px; }
 
 
 /** media */
 /** iphon5 */
 @media (max-width:330px){
-  h2 {font-size:1.2em !important; }
+  .item-avatar {padding-left:70px !important; height:auto;}
+  .item-avatar > img {max-height:45px !important; max-width:45px !important; margin-top:4px;   }
+  .item-text-wrap {font-size:1em; }
+
+  .tweet-isRetweeted button {padding:1px; font-size:.7em;  }
+
+
+  h2 {font-size:1em !important; }
   h3 {font-size:18px;}
-  p {font-size:14px !important; }
+  p {font-size:.7em !important; }
 }

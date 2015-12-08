@@ -30,11 +30,11 @@
       <div class="list card" ng-repeat="t in tweetList" ng-click="click(t)" ng-if='t.user.screen_name=="ReadySanDiego" && tweetList.length>0'>
         <div class='item item-avatar'>
           <img src="{{t.user.profile_image_url_https}}">
-          <h2 class='tweet-username'>
-            {{t.user.name}}
-            <span class='tweet-screen_name'><a href='#'>@{{t.user.screen_name}}</a></span>
-            <span class='tweet-datetime'> {{moment(t.created_at).format("MM-DD-YYYY hh:mm:ss a")}}</span>
-          </h2>
+          <h2>{{t.user.name}}</h2>
+          <p>
+              @{{t.user.screen_name}}<br>
+              {{moment(t.created_at).format("MM-DD-YYYY hh:mm:ss a")}}
+          </p>
 
           <!-- isRetweeted-->
           <div class='tweet-isRetweeted' ng-show='t.isRetweeted'>
@@ -48,11 +48,10 @@
           </div>
         </div>
 
-        <div class='item tweet-content'>
-          <p class='tweet-text'>{{t.text}}</p>
-          <p class='tweet-media' ng-if='t.entities&&t.entities.media&&t.entities.media.length>0'>
-            <img src="{{t.entities.media[0].media_url_https}}">
-          </p>
+        <div class='item item-text-wrap'>{{t.text}}</div>
+
+        <div class='item item-image' ng-if='t.entities&&t.entities.media&&t.entities.media.length>0'>
+          <img src="{{t.entities.media[0].media_url_https}}">
         </div>
 
 
