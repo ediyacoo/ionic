@@ -1301,7 +1301,7 @@ return {
 
 
 //feed controller
-.controller('FeedCtrl', function($scope, $ionicLoading, $ionicPopup, mySharedService, $rootScope){
+.controller('FeedCtrl', function($scope, $ionicLoading, $ionicPopup, mySharedService, $rootScope, $cordovaEmailComposer){
 
   //check when user enter to this view
   $scope.$on('$ionicView.enter', function(e) {
@@ -1329,6 +1329,34 @@ return {
     mySharedService.getEmergencyFeed().then(function(result){
       $scope.feed=result;
       $scope.$broadcast('scroll.refreshComplete')
+    })
+  }
+
+  //send email
+  $scope.sendMail=function(feed){
+    var options={
+      to: '',
+      /**
+      cc: 'erika@mustermann.de',
+      bcc: ['john@doe.com', 'jane@doe.com'],
+      attachments: [
+        'file://img/logo.png',
+        'res://icon.png',
+        'base64:icon.png//iVBORw0KGgoAAAANSUhEUg...',
+        'file://README.pdf'
+      ],
+      */
+      subject: feed.title,
+      body: feed.description,
+      isHtml: true
+    };
+
+
+    //send mail
+    $cordovaEmailComposer.open(options).then(function(result){
+      console.log(result)
+    }, function(err){
+      console.log(err)
     })
   }
 
