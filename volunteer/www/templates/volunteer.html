@@ -7,10 +7,26 @@
       <!--<h4 class='title'>Your most interested area is:<br><span>{{user.interestedArea}}</span></h4>-->
 
       <div class="list">
-        <label class="item item-input">
-          <i class="icon ion-search placeholder-icon"></i>
-          <input type="text" placeholder="Filter" ng-model="searchFilter">
-        </label>
+            <!--filter and sort-->
+            <label class="item item-input">
+              <i class="icon ion-search placeholder-icon"></i>
+              <input type="text" placeholder="Filter" ng-model="searchFilter">
+            </label>
+
+            <label class="item item-input item-select">
+              <div class="input-label">
+                <i class="icon ion-connection-bars placeholder-icon"></i>
+                Sort
+              </div>
+              <select ng-model="sortValue" ng-change="sort(sortValue)">
+                <option selected value='twitterAccount'>TwitterAccount</option>
+                <option value='retweet'>Retweet</option>
+              </select>
+            </label>
+
+
+
+
         <!--<div class='item item-divider' ng-repeat-start="(area, volunteers) in user.volunteers" ng-class="{'yourMostInterestedArea' : area==user.interestedArea}">
           {{area}}
         </div>-->
