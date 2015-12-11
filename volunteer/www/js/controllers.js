@@ -36,6 +36,11 @@ return {
                   return that.checkVolunteer(result.screen_name)
                 }
               }).then(function(output){
+
+                //reload OES tweets
+                return that.getOESTweet();
+
+              }).then(function(oesTweet){
                 defer.resolve(temp_result)
 
                 //save user actitvites
@@ -130,8 +135,20 @@ return {
     //logout
     logout: function(){
       //clear $localStorage and user variable
-      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:null, retweets:null, volunteerInfo:null})
+      this.storeOauth("twitter", {userProfile:null, volunteers:[], interestedArea:null, retweets:null, volunteerInfo:null});
       $localStorage.oauth["twitter"]=null;
+
+      //clear isRetweeted in each t
+      if(this.tweets){
+        for(var type in this.tweets){
+          if(type!="length"){
+            this.tweets[type].forEach(function(t,i){
+              t.isRetweeted=null;
+              t.retweetTime=null;
+            });
+          }
+        }
+      }
     },
 
 
@@ -146,7 +163,7 @@ return {
     interval_oauthWindowClose:null,
 
     //tweets
-    tweets:[],
+    tweets:null,  //will be object,
 
     //emgercyfeeds
     emergencyFeed:null,
@@ -162,21 +179,41 @@ return {
       $http.jsonp("http://vision.sdsu.edu/hdma/volunteer/tweets?callback=JSON_CALLBACK")
         .success(function(json){
           if(json&&json.length>0){
-            var result={top5:[], hour3:[], today:[], historical:[], all:json},
-                m_timestamp, m_today=moment(), dateFormat="MM-DD-YYYY";
+            var result={top5:[], hour2:[], today:[], historical:[], all:json},
+                m_timestamp, m_today=moment(), dateFormat="MM-DD-YYYY"
+                retweets=that.user.retweets;
+
 
             //parse by date
             json.forEach(function(t, i){
               m_timestamp=moment(t.created_at);
 
+              //check retweet
+              if(retweets&&retweets.length>0){
+                if(!t.isRetweeted&&!t.retweetTime){
+                  if(retweets[t.id_str]){
+                    t.isRetweeted=true;
+                    t.retweetTime=retweets[t.id_str].datetime_utc;
+                  }
+                }
+              }else{
+                t.isRetweeted=null;
+                t.retweetTime=null;
+              }
+
+              //isRetweetable (only for tweets which are less than 2 hrs or latest 5 )
+              t.isRetweetable=false;
+
               //most recent 5 tweets
               if(i<5){
+                t.isRetweetable=true;
                 result.top5.push(t)
               }
 
-              //within 3 hours
-              if(m_today.unix() - m_timestamp.unix() <= 3*60*60){
-                result.hour3.push(t);
+              //within 2 hours
+              if(m_today.unix() - m_timestamp.unix() <= 2*60*60){
+                t.isRetweetable=true;
+                result.hour2.push(t);
               }
 
               //today and historical tweets
@@ -186,6 +223,12 @@ return {
                 result.historical.push(t)
               }
             })
+
+
+            //store result in a global variable (mySharedService.tweets)
+            result.length=json.length;
+            that.tweets=result;
+
 
             $defer.resolve(result);
           }else{
@@ -334,6 +377,16 @@ return {
 
             //convert retweet array to obj
             var retweets=that.setRetweetObj(data.retweets);
+
+            //sort volunteer by twitter account
+            data.volunteers=data.volunteers.sort(function(a,b){
+              var aname=a.twitteraccount.toLowerCase(), bname=b.twitteraccount.toLowerCase();
+
+              if(aname < bname) return -1;
+              if(aname > bname) return 1;
+              return 0;
+            })
+
 
             that.storeOauth("twitter", {volunteers:data.volunteers || {}, retweets:retweets || null, interestedArea:data.interestedArea || null, volunteerInfo:data.volunteerInfo || null})
           }else{
@@ -669,7 +722,10 @@ return {
 
   //resume the app
   $ionicPlatform.on("resume", function(){
-    console.log("resume app and check volunteer...............")
+    console.log("resume app: refresh oes tweets and check volunteer...............")
+
+    //refresh OES tweet
+    mySharedService.getOESTweet();
 
     //check the user has signed up as a volunteer or not.
     var oauth_twitter=mySharedService.getOauth("twitter");
@@ -693,30 +749,6 @@ return {
 
 //tweet list controller
 .controller("TweetListCtrl", function($scope, $rootScope, $localStorage, $q, $http,  $ionicModal, $ionicLoading, $ionicPopup, mySharedService, TwitterService,  $ionicPlatform, $stateParams){
-  //check retweet
-  function checkRetweet(lists){
-    var retweets=mySharedService.user.retweets;
-
-    if(lists){
-      lists=lists.map(function(l, i){
-        if(retweets&&retweets.length>0){
-          if(!l.isRetweeted&&!l.retweetTime){
-            if(retweets[l.id_str]){
-              l.isRetweeted=true;
-              l.retweetTime=retweets[l.id_str].datetime_utc;
-            }
-          }
-        }else{
-          l.isRetweeted=null;
-          l.retweetTime=null;
-        }
-
-        return l
-      })
-    }
-    return lists
-  }
-
 
   $scope.moment=mySharedService.moment;
 
@@ -760,18 +792,22 @@ return {
   $scope.$on('$ionicView.enter', function(e) {
     //update tweet list
     //if user is already logout, we need to change the isTweeted value
-    $scope.changeTweetList($scope.selectedTab)
+    if(mySharedService.tweets&&mySharedService.tweets.length){
+      $scope.oesTweet=mySharedService.tweets;
+      $scope.changeTweetList($scope.selectedTab);
+    }
+
   });
 
 
   //if there is no existed tweets, manully get tweets
-  if(!mySharedService.tweets || mySharedService.tweets.length==0){
+  if(!mySharedService.tweets || !mySharedService.tweets.length || mySharedService.tweets.length==0){
     //show loading icon
     $ionicLoading.show();
 
     mySharedService.getOESTweet().then(function(json){
       $scope.oesTweet=json;
-      $scope.tweetList=checkRetweet(json[$scope.selectedTab]);
+      $scope.tweetList=json[$scope.selectedTab];
 
       //hide loading icon
       $ionicLoading.hide();
@@ -797,7 +833,7 @@ return {
   $scope.oesTweet={}
 
   //selected tab
-  $scope.selectedTab="hour3";
+  $scope.selectedTab="hour2";
 
   //user
   $scope.user=mySharedService.user;
@@ -808,7 +844,7 @@ return {
     return mySharedService.user.retweets
   }, function(value){
     if(value){
-      $scope.tweetList=checkRetweet($scope.oesTweet[$scope.selectedTab])
+      $scope.tweetList=$scope.oesTweet[$scope.selectedTab]
     }
   })
 
@@ -820,7 +856,7 @@ return {
     var output=$scope.oesTweet[type];
     if(output){
       //change tweetList Source;
-      $scope.tweetList=checkRetweet(output);
+      $scope.tweetList=output;
     }
   }
 
@@ -834,7 +870,7 @@ return {
 
     mySharedService.getOESTweet().then(function(result){
       $scope.oesTweet=result
-      $scope.tweetList=checkRetweet(result[$scope.selectedTab]);
+      $scope.tweetList=result[$scope.selectedTab];
       $scope.$broadcast('scroll.refreshComplete');
 
       defer.resolve();
@@ -906,7 +942,6 @@ return {
       //retweet
       //client side seems not working. There will be CORS (cross-domain issues)
       TwitterService.retweet(t, comment).then(function(result){
-        console.log(result)
 
         //save user actitvites
         $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"retweet", retweet:{user_id:oauth.user_id, tweet_id:t.id_str}}, {headers:{"Authorization":null, "Content-Type":"application/json"}}).then(function(success){
@@ -916,6 +951,9 @@ return {
             console.log("user's retweet saved successfully!")
             //update user's retweets
             mySharedService.storeOauth("twitter", {retweets: mySharedService.setRetweetObj(success.data.retweets)});
+
+            t.isRetweeted=true;
+            t.retweetTime=result.created_at;
 
             //if get the message, broadcast first to get the tweet
             $rootScope.$broadcast("retweeted", t)
@@ -1106,6 +1144,33 @@ return {
 
   }
 
+
+  //sort
+  $scope.sortValue="twitterAccount";
+  $scope.sort=function(type){
+    $scope.sortValue=type;
+
+    var volunteers=$scope.user.volunteers;
+
+    switch(type){
+      case "twitterAccount":
+        $scope.user.volunteers=volunteers.sort(function(a,b){
+          var aname=a.twitteraccount.toLowerCase(), bname=b.twitteraccount.toLowerCase();
+
+          if(aname < bname) return -1;
+          if(aname > bname) return 1;
+          return 0;
+        })
+      break;
+      case "retweet":
+      $scope.user.volunteers=volunteers.sort(function(a,b){
+        return b.retweets - a.retweets
+      })
+      break;
+    }
+
+  }
+
 })
 
 
@@ -1256,7 +1321,7 @@ return {
 //home controller
 .controller('HomeCtrl', function($scope, $ionicLoading, $ionicPopup, $state, mySharedService, $rootScope){
   //check cached tweets
-  if(!mySharedService.tweets || mySharedService.tweets.lenght==0){
+  if(!mySharedService.tweets || mySharedService.tweets.length==0){
     //show loading icon
     $ionicLoading.show();
 

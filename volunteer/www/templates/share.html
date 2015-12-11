@@ -29,7 +29,7 @@
     </div>
 
     <!--comment -->
-    <div class='list list-inset' ng-show="!t.isRetweeted">
+    <div class='list list-inset' ng-show="!t.isRetweeted&&t.isRetweetable">
       <label class='item item-input'>
         <textarea placeholder='Comments' ng-model='comment'></textarea>
       </label>
@@ -39,7 +39,8 @@
 
     <!--button-->
     <div class="padding" style='margin-top:25px; '>
-        <button class="button icon-left ion-android-share-alt button-calm" ng-click="retweet(t, comment)" ng-show="!t.isRetweeted">Retweet</button>
+        <button class="button icon-left ion-android-share-alt button-calm" ng-click="retweet(t, comment)" ng-show="!t.isRetweeted&&t.isRetweetable">Retweet</button>
+        <button class="button icon-left button-outline button-calm"  ng-show="!t.isRetweetable&&!t.isRetweeted">The tweet is out of date.</button>
         <button class="button icon-left button-outline ion-ios-checkmark-outline button-calm"  ng-show="t.isRetweeted==true">You already retweeted!</button>
     </div>
 
