@@ -378,13 +378,9 @@ return {
             //convert retweet array to obj
             var retweets=that.setRetweetObj(data.retweets);
 
-            //sort volunteer by twitter account
+            //sort volunteer by retweet
             data.volunteers=data.volunteers.sort(function(a,b){
-              var aname=a.twitteraccount.toLowerCase(), bname=b.twitteraccount.toLowerCase();
-
-              if(aname < bname) return -1;
-              if(aname > bname) return 1;
-              return 0;
+              return b.retweets - a.retweets
             })
 
 
@@ -1030,6 +1026,8 @@ return {
     if(oauth_twitter && oauth_twitter.screen_name){
       mySharedService.checkVolunteer(oauth_twitter.screen_name).then(function(result){
         $scope.user=mySharedService.user;
+        $scope.sortValue="Retweet";
+
 
         switch(type){
           case "normal":
@@ -1149,14 +1147,13 @@ return {
 
 
   //sort
-  $scope.sortValue="twitterAccount";
-  $scope.sort=function(type){
-    $scope.sortValue=type;
-
-    var volunteers=$scope.user.volunteers;
+  $scope.sortValue="Retweet";
+  $scope.sort=function(){
+    var type=$scope.sortValue,
+        volunteers=$scope.user.volunteers;
 
     switch(type){
-      case "twitterAccount":
+      case "TwitterAccount":
         $scope.user.volunteers=volunteers.sort(function(a,b){
           var aname=a.twitteraccount.toLowerCase(), bname=b.twitteraccount.toLowerCase();
 
@@ -1165,7 +1162,7 @@ return {
           return 0;
         })
       break;
-      case "retweet":
+      case "Retweet":
       $scope.user.volunteers=volunteers.sort(function(a,b){
         return b.retweets - a.retweets
       })
