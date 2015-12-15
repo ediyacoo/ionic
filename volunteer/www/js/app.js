@@ -8,11 +8,9 @@
 angular.module('starter', ['ionic','ionic.service.core','ngCordova','ionic.service.push', 'starter.controllers', 'service-oauth', 'chart.js'])
 
 .run(function($ionicPlatform, $cordovaSplashscreen) {
-  //hide splashscreen after 3seconds (espeically for IOS)
-  console.log("ready to hide splash screen")
+  //hide splashscreen after 5seconds (espeically for IOS)
   setTimeout(function(){
     $cordovaSplashscreen.hide();
-    console.log("hide splash screen after 5s")
   }, 5000);
 
 

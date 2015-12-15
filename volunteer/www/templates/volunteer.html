@@ -18,13 +18,9 @@
                 <i class="icon ion-connection-bars placeholder-icon"></i>
                 Sort
               </div>
-              <select ng-model="sortValue" ng-change="sort(sortValue)">
-                <option selected value='twitterAccount'>TwitterAccount</option>
-                <option value='retweet'>Retweet</option>
-              </select>
+              <!-- it seems ng-model cannot bind in the select under ionic. We need to add $parent in the ng-modal -->
+              <select ng-model="$parent.sortValue" ng-change="sort()" ng-options="i for i in ['Retweet', 'TwitterAccount']"></select>
             </label>
-
-
 
 
         <!--<div class='item item-divider' ng-repeat-start="(area, volunteers) in user.volunteers" ng-class="{'yourMostInterestedArea' : area==user.interestedArea}">
