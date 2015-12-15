@@ -678,8 +678,6 @@ return {
 //init run
 .run(function($ionicPlatform, $rootScope, mySharedService, $localStorage){
 
-
-
   $ionicPlatform.ready(function(){
     var device_user=null;
 
