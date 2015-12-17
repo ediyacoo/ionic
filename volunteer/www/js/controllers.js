@@ -43,8 +43,11 @@ return {
               }).then(function(oesTweet){
                 defer.resolve(temp_result)
 
+                //save user device info again to update the twitter information
+                var device=(that.user&&that.user.device)?that.user.device:null;
+
                 //save user actitvites
-                return $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"userProfile", userProfile:temp_result.userProfile}, {headers:{"Authorization":null, "Content-Type":"application/json"}})
+                return $http.post("http://vision.sdsu.edu/hdma/volunteer/post/userActivity", {type:"userProfile&deviceInfo", userProfile:temp_result.userProfile, deviceInfo:device}, {headers:{"Authorization":null, "Content-Type":"application/json"}})
               }).then(function(success){
                 if(success.data&&success.data.status!='success'){
                   defer.reject({code:"userActivity-error", error:success.data})
