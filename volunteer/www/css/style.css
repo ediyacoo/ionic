@@ -11,7 +11,7 @@
 .item-avatar > p {font-size:.8em; line-height:16px; }
 
 /** tweetlist */
-.tweet-tabs {top:0px !important; position:relative; border-bottom:1px solid #eeeeee; background-color:#ffffff; }
+.tweet-tabs {top:0px !important; position:relative; border-bottom:1px solid #eeeeee; background-color:#ffffff; box-shadow: 0px -1px 10px 1px #cccccc;  }
 .tweet-tabs .tab-item {font-size:.85em !important; }
 .tweet-tabs .tab-item i {font-size:.85em; }
 .tweet-listCard {margin-top:-4px; }
