@@ -659,7 +659,7 @@ return {
         {
           text:"Sign up",
           type:"button-positive",
-          onTap: function(e){window.open("http://vision.sdsu.edu/ibss/signup.html", "_system");}
+          onTap: function(e){window.open("https://docs.google.com/forms/d/1kDCIkUKhfsNUG9DMJZD5rADhSZNCyg3dvOjmtMzhOIs/viewform", "_system");}
         }
       ]}},
       "CheckVolunteer-no-screen_name":{msg:"no screen_name."},
