@@ -223,8 +223,11 @@ return {
               if(m_timestamp.format(dateFormat)==m_today.format(dateFormat)){
                 result.today.push(t)
               }else{
-                result.historical.push(t)
+                //result.historical.push(t)
               }
+
+              //all tweets
+              result.historical.push(t)
             })
 
 
