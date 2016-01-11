@@ -967,7 +967,7 @@ return {
 
 
         //show popup
-        mySharedService.showPopup("show", {title:"Retweet Succeed!", template:"Please click on the folowing button to see the retweet", buttons:[
+        mySharedService.showPopup("show", {title:"Retweet Succeed!", template:"Please click on the following button to see the retweet", buttons:[
           {text:"Cancel"},
           {text:"See Retweet", type:"button-positive", onTap: function(e){
             //check twitter api
