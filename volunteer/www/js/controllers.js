@@ -985,7 +985,7 @@ return {
 
       }, function(err){
         var title='ERROR-RETWEET',
-            msg=JSON.stringify(err)
+            msg=JSON.stringify(err.data)
 
         //check error status==403
         if(err.status&&err.status==403){
@@ -998,6 +998,14 @@ return {
             })
             msg+="</ul>"
           }
+        }
+
+        //no TWEET ID >> OES may remove the tweet
+        if(err.status&&err.status==404&&err.data&&err.data.errors&&err.data.errors[0]&&err.data.errors[0].code==144){
+          msg="Sorry. This tweet has been removed. Please retweet others."
+
+          //refresh oes tweets
+          $scope.refreshOESTweet();
         }
 
         mySharedService.showPopup("alert", {title:title, template:msg}, err);
