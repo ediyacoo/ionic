@@ -182,7 +182,7 @@ return {
       $http.jsonp("http://vision.sdsu.edu/hdma/volunteer/tweets?callback=JSON_CALLBACK")
         .success(function(json){
           if(json&&json.length>0){
-            var result={top5:[], hour2:[], today:[], historical:[], all:json},
+            var result={hour1:[], today:[], historical:[], all:json},
                 m_timestamp, m_today=moment(), dateFormat="MM-DD-YYYY"
                 retweets=that.user.retweets;
 
@@ -207,16 +207,15 @@ return {
               //isRetweetable (only for tweets which are less than 2 hrs or latest 5 )
               t.isRetweetable=false;
 
-              //most recent 5 tweets
-              if(i<5){
+              //most recent 1 tweets
+              if(i<1){
                 t.isRetweetable=true;
-                result.top5.push(t)
               }
 
-              //within 2 hours
-              if(m_today.unix() - m_timestamp.unix() <= 2*60*60){
+              //within 1 hours
+              if(m_today.unix() - m_timestamp.unix() <= 1*60*60){
                 t.isRetweetable=true;
-                result.hour2.push(t);
+                result.hour1.push(t);
               }
 
               //today and historical tweets
@@ -657,7 +656,7 @@ return {
     //error code and description
     error:{
       "$http-error":{msg:"$http error"},
-      "CheckVolunteer-not-signup":{msg:"It seems you have not signed up as an OES volunteer. Please click on the following button to sign up.", dialog:{type:"confirm", buttons:[
+      "CheckVolunteer-not-signup":{msg:"It seems you have not signed up as an OES participant. Please click on the following button to sign up.", dialog:{type:"confirm", buttons:[
         {text:"Cancel"},
         {
           text:"Sign up",
@@ -666,7 +665,7 @@ return {
         }
       ]}},
       "CheckVolunteer-no-screen_name":{msg:"no screen_name."},
-      "findVolunteer-no-volunteer":{msg:"We cannot find any volunteers in your most interested area."},
+      "findVolunteer-no-volunteer":{msg:"We cannot find any participants in your most interested area."},
       "findVolunteer-no-oauth-info":{msg:"No oauth or no screen_name info"},
       "getUserProfile-error":{msg:"getUserProfile-error"},
       "twitterOauthLogin-login-failure":{msg:"Cannot login with your Twitter account"},
@@ -725,7 +724,7 @@ return {
 
   //resume the app
   $ionicPlatform.on("resume", function(){
-    console.log("resume app: refresh oes tweets and check volunteer...............")
+    console.log("resume app: refresh oes tweets and check participant...............")
 
     //refresh OES tweet
     mySharedService.getOESTweet();
@@ -734,7 +733,7 @@ return {
     var oauth_twitter=mySharedService.getOauth("twitter");
     if(oauth_twitter && oauth_twitter.screen_name){
       mySharedService.checkVolunteer(oauth_twitter.screen_name).then(function(result){
-        console.log("refresh volunteer list successfully")
+        console.log("refresh participant list successfully")
       });
     }
   })
@@ -836,7 +835,7 @@ return {
   $scope.oesTweet={}
 
   //selected tab
-  $scope.selectedTab="hour2";
+  $scope.selectedTab="hour1";
 
   //user
   $scope.user=mySharedService.user;
