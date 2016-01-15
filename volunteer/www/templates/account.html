@@ -2,7 +2,7 @@
   <ion-content>
     <div class='login' ng-if="!user.userProfile">
       <div class="padding" style='margin-top:25px; '>
-          <h3>To view your account, you need to login with your Twitter account and register as an OES San Diego communication volunteer.</h3>
+          <h3>To view your account, you need to login with your Twitter account and register as an OES San Diego communication participant.</h3>
           <p></p>
           <!-- step1 -->
           <div class='card' ng-class='user.userProfile?"fade":""'>
@@ -27,17 +27,17 @@
               <h3 class='card-num'>2</h3>
               <div class='card-content'>
                 <div ng-if='!user.userProfile&&!user.volunteerInfo'>
-                  <p>Register as an OES San Diego communication volunteer</p>
-                  <button class="button button-block button-outline icon-left button-calm"  onclick="window.open('https://docs.google.com/forms/d/1kDCIkUKhfsNUG9DMJZD5rADhSZNCyg3dvOjmtMzhOIs/viewform', '_system');return false;">Volunteer Register</button>
+                  <p>Register as an OES San Diego communication participant</p>
+                  <button class="button button-block button-outline icon-left button-calm"  onclick="window.open('https://docs.google.com/forms/d/1kDCIkUKhfsNUG9DMJZD5rADhSZNCyg3dvOjmtMzhOIs/viewform', '_system');return false;">Participant Register</button>
                 </div>
 
                 <div ng-if='user.userProfile&&user.volunteerInfo'>
-                  <p>You are the OES San Diego communication volunteer</p>
+                  <p>You are the OES San Diego communication participant</p>
                 </div>
 
                 <div ng-if='user.userProfile&&!user.volunteerInfo'>
-                  <p>It seems you have not registered as OES San Diego communication volunteer. Please click this button to register.</p>
-                    <button class="button icon-left button-calm" onclick="window.open('https://docs.google.com/forms/d/1kDCIkUKhfsNUG9DMJZD5rADhSZNCyg3dvOjmtMzhOIs/viewform', '_system');return false;">Volunteer Register</button>
+                  <p>It seems you have not registered as OES San Diego communication participant. Please click this button to register.</p>
+                    <button class="button icon-left button-calm" onclick="window.open('https://docs.google.com/forms/d/1kDCIkUKhfsNUG9DMJZD5rADhSZNCyg3dvOjmtMzhOIs/viewform', '_system');return false;">Participant Register</button>
                 </div>
               </div>
             </div>
@@ -55,7 +55,7 @@
             <h2>@{{user.userProfile.screen_name}}</h2>
             <p>{{user.userProfile.description}}</p>
             <p ng-if="user.volunteerInfo">Additional Language: {{user.volunteerInfo.areyouproficientinanyotherlanguages}}</p>
-            <p ng-if="user.volunteerInfo">Volunteer since: {{user.volunteerInfo.timestamp}}</p>
+            <p ng-if="user.volunteerInfo">since: {{user.volunteerInfo.timestamp}}</p>
           </a>
         </div>
 
@@ -74,13 +74,13 @@
         <!--more options-->
         <div ng-if="!user.volunteerInfo">
           <h4>Wanna see more options?</h4>
-          <p>Please register as an OES communication Volunteer</p>
-          <button class="button icon-left  button-calm" onclick="window.open('https://docs.google.com/forms/d/1kDCIkUKhfsNUG9DMJZD5rADhSZNCyg3dvOjmtMzhOIs/viewform', '_system');return false;">Volunteer Register</button>
+          <p>Please register as an OES communication Participant</p>
+          <button class="button icon-left  button-calm" onclick="window.open('https://docs.google.com/forms/d/1kDCIkUKhfsNUG9DMJZD5rADhSZNCyg3dvOjmtMzhOIs/viewform', '_system');return false;">Participant Register</button>
         </div>
 
         <p></p>
         <!--logout-->
-        <p style='margin-top:100px; '>Log out your Twitter account?</p>
+        <p style='margin-top:50px; '>Log out your Twitter account?</p>
         <button  class="button icon-left button-outline ion-social-twitter button-calm" ng-click="logout()">Twitter Logout</button>
 
       </div>
